@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "FoxNetSoft.Plugin.Payments.PayflowPro/1.00": {
+        "runtime": {
+          "FoxNetSoft.Plugin.Payments.PayflowPro.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FoxNetSoft.Plugin.Payments.PayflowPro/1.00": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

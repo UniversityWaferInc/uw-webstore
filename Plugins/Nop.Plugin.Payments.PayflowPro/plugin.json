@@ -1,0 +1,11 @@
+﻿{
+  "Group": "",
+  "FriendlyName": "University Wafer PayflowPro",
+  "SystemName": "University Wafer PayflowPro",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.30" ],
+  "Author": "Ranjan Dahal",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Payments.UWPayflowPro.dll",
+  "Description": "University Wafer PayflowPro Plugin for paypal payment processing"
+}

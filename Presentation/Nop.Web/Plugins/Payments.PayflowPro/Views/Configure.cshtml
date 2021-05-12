@@ -1,0 +1,267 @@
+﻿@model FoxNetSoft.Plugin.Payments.PayflowPro.Models.ConfigurationModel
+@{
+    Layout = "_ConfigurePlugin";
+}
+@using FoxNetSoft.Plugin.Payments.PayflowPro.Domain
+@await Component.InvokeAsync("StoreScopeConfiguration")
+
+<form asp-controller="PayflowProPaymentSettings" asp-action="Configure" method="post">
+    <script>
+        $(document).ready(function () {
+            $("#showDebugInfo").click(toggleshowDebugInfo);
+            $("#@Html.IdFor(model => model.CreateOrderModeId)").change(toggleCreateOrderMode);
+
+            toggleshowDebugInfo();
+            toggleCreateOrderMode();
+        });
+
+        function toggleshowDebugInfo() {
+            if ($('#showDebugInfo').is(':checked')) {
+                $('#pnlclearlogfile, #pnlgetlogfile').show();
+            }
+            else {
+                $('#pnlclearlogfile, #pnlgetlogfile').hide();
+            }
+        }
+        function toggleCreateOrderMode() {
+            var selectedCreateOrderModeId = $("#@Html.IdFor(model => model.CreateOrderModeId)").val();
+
+            $('#pnlSkipPaymentInfo').hide();
+
+            switch (selectedCreateOrderModeId) {
+               case '@(((int)CreateOrderMode.AfterPayment).ToString())':
+                   break;
+               case '@(((int)CreateOrderMode.BeforePayment).ToString())':
+                    $('#pnlSkipPaymentInfo').show();
+                   break;
+                }
+            }
+    </script>
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p>
+                    @if (Model.IsRegisted == true)
+                    {
+                        @T("Admin.FoxNetSoft.Plugin.Payments.PayflowPro.IsRegisted")
+                    }
+                    else
+                    {
+                        @T("Admin.FoxNetSoft.Plugin.Payments.PayflowPro.IsNoRegisted")
+                        <br />
+                        <a href="https://www.foxnetsoft.com/payflowprohostedcheckoutpage" target="blank">Buy It Now</a>
+                    }
+                </p>
+                <p>
+                    <br />To use PayPal Payflow, you must have PayPal account or existing account from another bank.
+                    <br />Log in to your PayPal Payflow account (click <a href="https://manager.paypal.com/" target="_blank">here</a> to create your account).
+                    <br />
+                    <br />
+                    <br />PayPal PayFlow Pro is a payment gateway integration for Shopp for <a href="http://paypal.com/pro">PayPal Payments Pro</a> and <a href="http://paypal.com/payflowgateway">PayPal Payflow Pro</a> merchants. Currently only for US, Australia, Canada, and New Zealand merchants.
+                    <br />Requirements
+                    <br />The PayPal PayFlow Pro gateway module for Shopp uses a local checkout process, meaning that the customer stays on your website throughout the entire transaction. As sensitive information is required to complete a transaction, <strong><a href="https://shopplugin.net/docs/payment-processing/ssl-setup-certificates/">Setup SSL &amp; Certificates</a> for your website is required.</strong>
+                    <br />Here is how you get the account information from PayPal:
+                    <br />
+                    <ol>
+                        <li>Log in to your PayPal Business account.</li>
+                        <li>Click the My Account tab.</li>
+                        <li>Click the Profile tab.</li>
+                        <li>Click Request API credentials under Account information.</li>
+                        <li>Click Set up Payflow Pro API access under Option 2.</li>
+                        <li>Use the information to enter the username, partner, vendor, and password in your Shopp setup.</li>
+                    </ol>
+                    <br />PayPal Account Setup
+                    <br />For merchants that have existing internet merchant accounts with their bank, to start using the PayPal PayFlow Pro payment gateway, you’ll need to setup a <a href="http://www.paypal.com/payflowgateway">PayPal Payflow Pro account</a>. For merchants that do not have an existing internet merchant account, you’ll need to setup a <a href="http://paypal.com/pro">PayPal Payments Pro account</a>. You’ll use your registered PayPal Manager account credential in the Shopp Payflow Pro module.
+                    <br />Testing Account
+                    <br />If you aren’t yet ready to purchase the PayPal PayFlow Pro account, but you need to be able to test the gateway while you are developing your Shopp site, follow the same process to setup a full <a href="http://www.paypal.com/payflowgateway">PayPal Payflow Pro account</a>, and stop just short of submitting a payment (the last step).
+                    <br />You will find that your account will still have been created, and you will receive a confirmation email which will allow you to login to the PayPal Manager.  Your account will remain in <strong>Test</strong> mode until you activate it with purchase.
+                    <br />
+                    <br />You will have four parameters:
+                    <br />Partner: <b>paypal</b> - use this static value
+                    <br />Vendor: <b>your username (same as User)</b>
+                    <br />User: <b>your username (same as Vendor)</b>
+                    <br />Password: <b>your password</b>
+                </p>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="Partner_OverrideForStore" asp-input="Partner" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="Partner" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Partner" />
+                        <span asp-validation-for="Partner"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="Vendor_OverrideForStore" asp-input="Vendor" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="Vendor" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Vendor" />
+                        <span asp-validation-for="Vendor"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="User_OverrideForStore" asp-input="User" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="User" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="User" />
+                        <span asp-validation-for="User"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="Password_OverrideForStore" asp-input="Password" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="Password" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Password" />
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="UseSandbox_OverrideForStore" asp-input="UseSandbox" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="UseSandbox" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="UseSandbox" />
+                        <span asp-validation-for="UseSandbox"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="TransactModeId_OverrideForStore" asp-input="TransactModeId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="TransactModeId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="TransactModeId" asp-items="Model.TransactModeValues" />
+                        <span asp-validation-for="TransactModeId"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="SupportMultiCurrency_OverrideForStore" asp-input="SupportMultiCurrency" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="SupportMultiCurrency" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="SupportMultiCurrency" />
+                        <span asp-validation-for="SupportMultiCurrency"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ReturnUrl" />
+                    </div>
+                    <div class="col-md-9">
+                        <input class="form-control text-box single-line" id="ReturnUrl" name="ReturnUrl" value="@Model.ReturnUrl" type="text" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="CreateOrderModeId_OverrideForStore" asp-input="CreateOrderModeId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="CreateOrderModeId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="CreateOrderModeId" asp-items="Model.CreateOrderModeValues" />
+                        <span asp-validation-for="CreateOrderModeId"></span>
+                    </div>
+                </div>
+                <div class="form-group" id="pnlSkipPaymentInfo">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="SkipPaymentInfo_OverrideForStore" asp-input="SkipPaymentInfo" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="SkipPaymentInfo" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="SkipPaymentInfo" />
+                        <span asp-validation-for="SkipPaymentInfo"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="AdditionalFeePercentage_OverrideForStore" asp-input="AdditionalFeePercentage" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="AdditionalFeePercentage" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AdditionalFeePercentage" />
+                        <span asp-validation-for="AdditionalFeePercentage"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="AdditionalFee_OverrideForStore" asp-input="AdditionalFee" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="AdditionalFee" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AdditionalFee" />
+                        <span asp-validation-for="AdditionalFee"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="showDebugInfo" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="showDebugInfo" />
+                        <span asp-validation-for="showDebugInfo"></span>
+                        <div id="pnlclearlogfile">
+                            <a href="@Url.Action("ClearLogFile")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Payments.PayflowPro.ClearLogFile")</a>
+                        </div>
+                        <div id="pnlgetlogfile">
+                            <a href="@Url.Action("GetLogFile")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Payments.PayflowPro.GetLogFile")</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="StoreUrl" />
+                    </div>
+                    <div class="col-md-9">
+                        <input class="form-control text-box single-line" id="StoreUrl" name="StoreUrl" value="@Model.StoreUrl" type="text" readonly="readonly">
+                        <span asp-validation-for="StoreUrl"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="SerialNumber" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="SerialNumber" />
+                        <span asp-validation-for="SerialNumber"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <input type="submit" name="save" class="btn bg-primary" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+                <p>
+                    Installation and configuring plug-in at Youtube <a href="http://www.youtube.com/foxnetsoft" target="blank">www.youtube.com/foxnetsoft</a>
+                    <br />
+                    Installation and configuring plug-in at our site <a href="https://www.foxnetsoft.com/documentation-payflowprohostedcheckoutpage" target="blank">https://www.foxnetsoft.com/documentation-payflowprohostedcheckoutpage</a>
+                    <br />
+                    <a href="https://www.foxnetsoft.com" target="blank">www.foxnetsoft.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</form>

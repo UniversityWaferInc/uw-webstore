@@ -60,6 +60,24 @@ var AjaxCart = {
         });
     },
 
+    //add a product to the cart/wishlist from the product details page
+    addproducttocart_details_uw: function (urladd, serializedData) {
+        if (this.loadWaiting !== false) {
+            return;
+        }
+        this.setLoadWaiting(true);
+
+        $.ajax({
+            cache: false,
+            url: urladd,
+            data: serializedData,
+            type: "POST",
+            success: this.success_process,
+            complete: this.resetLoadWaiting,
+            error: this.ajaxFailure
+        });
+    },
+
     //add a product to compare list
     addproducttocomparelist: function (urladd) {
         if (this.loadWaiting !== false) {

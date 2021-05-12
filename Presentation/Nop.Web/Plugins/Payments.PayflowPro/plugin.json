@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Payment methods",
+  "FriendlyName": "PayPal Payflow Pro (hosted checkout page)",
+  "SystemName": "FoxNetSoft.PayflowPro",
+  "Version": "1.02",
+  "SupportedVersions": [ "4.30" ],
+  "Author": "FoxNetSoft",
+  "DisplayOrder": 1,
+  "FileName": "FoxNetSoft.Plugin.Payments.PayflowPro.dll",
+  "Description": "Credit cards Payflow Pro (hosted checkout page)"
+}

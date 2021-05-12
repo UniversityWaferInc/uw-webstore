@@ -1,0 +1,76 @@
+﻿@using Nop.Core.Domain.Orders
+@model ProductDetailsModel.AddToCartModel
+
+@{
+    var shoppintCartId = (int)ShoppingCartType.ShoppingCart;
+}
+<form id="#product-details-form-@Model.ProductId" style="max-width:110px;margin: auto 0px;">
+    @if (!Model.DisableBuyButton)
+    {
+        <div class="add-to-cart">
+            @if (!Model.DisableBuyButton)
+            {
+                <div class="add-to-cart-panel" style="min-width: 90px;">
+                    <div class="form-group">
+                        <div class="quan">
+                            @*<label asp-for="EnteredQuantity" asp-postfix=":" class="qty-label"></label>*@
+                            @if (Model.AllowedQuantities.Count > 0)
+                            {
+                                <div style="float:left; max-width: 60px;">
+                                    <select asp-for="EnteredQuantity" asp-items="Model.AllowedQuantities" id="product_enteredQuantity_@Model.ProductId" class="qty-dropdown form-control"></select>
+                                    <script asp-location="Footer">
+                                    $(document).ready(function () {
+                                        $("#product_enteredQuantity_@Model.ProductId").on("change", function () {
+                                            var data = {
+                                                productId: @Model.ProductId,
+                                                quantity: $('#product_enteredQuantity_@Model.ProductId').find(":selected").text()
+                                            };
+
+                                            $('#enteredQty_@Model.ProductId').val(this.val);
+
+                                            alert('hello');
+                                            $(document).trigger({ type: "product_quantity_changed", changedData: data });
+                                        });
+                                    });
+                                    </script>
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="max-width: 40px; padding:0; margin: 0;">
+                                    <input asp-for="EnteredQuantity" id="product_enteredQuantity_@Model.ProductId" class="qty-input form-control" type="text" style="width:90%" />
+                                </div>
+                                <script asp-location="Footer">
+                                //when a customer clicks 'Enter' button we submit the "add to cart" button (if visible)
+        	                    $(document).ready(function() {
+                                    $("#@Html.IdFor(model => model.EnteredQuantity)").on("keydown", function(event) {
+                                        if (event.keyCode == 13) {
+                                            $("#add-to-cart-button-@Model.ProductId").trigger("click");
+                                            return false;
+                                        }
+                                    });
+                                    $("#product_enteredQuantity_@Model.ProductId").on("input propertychange paste", function () {
+                                        var data = {
+                                            productId: @Model.ProductId,
+                                            quantity: $('#product_enteredQuantity_@Model.ProductId').val()
+                                        };
+                                        $(document).trigger({ type: "product_quantity_changed", changedData: data });
+                                    });
+                                });
+                                </script>
+                            }
+                            @{
+                                var addToCartText = T("ShoppingCart.AddToCart").Text;
+                                <input id="enteredQty_@Model.ProductId" type="text" hidden>
+                                <div class="product-add-button">
+                                    <input type="button" id="add-to-cart-button-@Model.ProductId" style="margin-top: 5px;" class="btn-primary add-to-cart-button" value="+" data-productid="@Model.ProductId" onclick="addToCartOnClick(@Model.ProductId, @shoppintCartId)" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.ProductDetailsAddInfo, additionalData = Model })
+        </div>
+    }
+</form>

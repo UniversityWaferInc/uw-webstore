@@ -1,0 +1,31 @@
+﻿@model FoxNetSoft.Plugin.Payments.PayflowPro.Models.ErrorMessageModel
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    //page class
+    Html.AppendPageCssClassParts("html-checkout-page");
+    Html.AppendPageCssClassParts("html-order-completed-page");
+}
+@using Nop.Web.Framework.UI
+<div class="page checkout-page order-completed-page">
+    <div class="page-title">
+        <h1>@T("FoxNetSoft.Plugin.Payments.PayflowPro.Title")</h1>
+    </div>
+    <div class="page-body checkout-data">
+        <div class="section order-completed">
+            <div class="details">
+                <div class="message-error">
+                    <h3>@T("FoxNetSoft.Plugin.Payments.PayflowPro.DescriptionError")</h3>
+                    <ul>
+                        @foreach (var warning in Model.Warnings)
+                        {
+                            <li>@warning</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

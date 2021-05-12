@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\Libraries\Nop.Core\Nop.Core.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Data\Nop.Data.csproj" />
     <ProjectReference Include="..\..\Libraries\Nop.Services\Nop.Services.csproj" />
+    <ProjectReference Include="..\..\Plugins\Nop.Plugin.Misc.UniversityWafer\Nop.Plugin.Misc.UniversityWafer.csproj" />
     <ProjectReference Include="..\Nop.Web.Framework\Nop.Web.Framework.csproj" />
   </ItemGroup>
 
@@ -36,14 +37,188 @@
     <EmbeddedResource Remove="Plugins\**;Themes\**" />
     <None Remove="Plugins\**;Themes\**" />
 
-    <Content Include="Plugins\bin\placeholder.txt" CopyToPublishDirectory="PreserveNewest"/>
-    <None Include="Plugins\**"  CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Plugins\bin\placeholder.txt" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Plugins\**" CopyToPublishDirectory="PreserveNewest" />
 
     <Content Include="Themes\**" CopyToPublishDirectory="PreserveNewest" Exclude="Themes\**\*.config;Themes\**\*.cshtml;Themes\**\*.json" />
-    <None Include="Themes\**"  CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Themes\**" CopyToPublishDirectory="PreserveNewest" />
 
     <!-- We copy the \Logs directory -->
     <Content Include="Logs\**" CopyToPublishDirectory="PreserveNewest" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\fontawesome-webfont.eot" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\fontawesome-webfont.svg" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\fontawesome-webfont.ttf" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\fontawesome-webfont.woff" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\fontawesome-webfont.woff2" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\FontAwesome.otf" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Remove="Themes\DefaultClean\Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Remove="Themes\DefaultClean\Content\images\add-new-address-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ajax_loader_large.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\ajax_loader_small.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\animated-overlay.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\arrow-dropdown.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\arrow-up.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\bbeditor-button-bg.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\bottom-box-shadow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\Breadcrumb-bg.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\cart-background.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\cartpage-collapse-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\cartpage-down-caret.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\cartpage-up-caret.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\checkout-back-arrow-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\checkout-back-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\checkout-continue-arrow-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\checkout-continue-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\checkout-order-confrim.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\closelabel.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\compare-product-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\delete-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\dot-ico.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\dot-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\down-caret.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\download-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\edit-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\email-product-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\email-product-icon1.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\facebook-signing.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\flyout-arrow-top.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\footer-toggle-down-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\footer-toggle-up-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\forum-footer-bg.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\header_bg.jpg" />
+    <Content Remove="Themes\DefaultClean\Content\images\header_bg.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ico-close-notification-bar.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ico-delete.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\info-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\main-menubar-background.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\menubar-background.jpg" />
+    <Content Remove="Themes\DefaultClean\Content\images\menubar-left.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\menubar-li-background.jpg" />
+    <Content Remove="Themes\DefaultClean\Content\images\menubar-right.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\news-bg.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\Newsletter-bg.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\next-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\nextlabel.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\notification-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\pagination-next-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\pagination-next-last-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\pagination-previous-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\pagination-previous-last-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\payment-method.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\previous-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\prevlabel.gif" />
+    <Content Remove="Themes\DefaultClean\Content\images\product-cart-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\product-compare-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\product-compare-icon1.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\product-wishlist-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\remove-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ribbon-bow.jpg" />
+    <Content Remove="Themes\DefaultClean\Content\images\search-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\select-dropdown.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\shipping-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\shopping-cart-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\shopping-cart-update-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\star-x-active.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\star-x-inactive.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-active-icon-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-active-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-arrow-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-deactive-icon-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-deactive-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-list-active-icon-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-list-active-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-list-deactive-icon-rtl.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\submenu-list-deactive-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\thumb-next-slider.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\thumb-prev-slider.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\toggle-down-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\toggle-up-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\top-arrow-hover.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\top-arrow.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-icons_222222_256x240.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-icons_454545_256x240.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-icons_888888_256x240.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\wishlist-email-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\wishlist-icon1.png" />
+    <Content Remove="Themes\DefaultClean\Content\images\wishlist-product-icon.png" />
+    <Content Remove="Themes\DefaultClean\Content\img\glyphicons-halflings-white.png" />
+    <Content Remove="Themes\DefaultClean\Content\img\glyphicons-halflings.png" />
+    <Content Remove="Themes\DefaultClean\Content\js\bakedelights.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\bakedelights.rtl.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\bootstrap.min.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\bootstrap.min.rtl.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\head.min.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\owl.carousel.min.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\respond.min.js" />
+    <Content Remove="Themes\DefaultClean\Content\js\selectivizr-min.js" />
+    <Content Remove="Themes\UniversityWafer\preview.png" />
+    <None Remove="Themes\UniversityWafer\Content\css\print.css" />
+    <None Remove="Themes\UniversityWafer\Content\css\styles.css" />
+    <None Remove="Themes\UniversityWafer\Content\css\styles.rtl.css" />
+    <None Remove="Themes\UniversityWafer\Content\images\ajax-loader-small.gif" />
+    <None Remove="Themes\UniversityWafer\Content\images\back-button.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\calendar-next.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\calendar-prev.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\close.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\compare-button.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\details.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\discontinued-product-icon.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\download-button.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\edit.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\edit_.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\email-button.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\first.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\ie_warning.jpg" />
+    <None Remove="Themes\UniversityWafer\Content\images\last.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\loading.gif" />
+    <None Remove="Themes\UniversityWafer\Content\images\logo.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\menu-icon.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\move.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\new.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\next.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\pointer.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\prev.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\rating1.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\rating2.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\remove.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\remove_.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\reply.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\retry.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\return.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\rss.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\shipping.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\shopping-bag.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\social-sprite.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\subscribe-button.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\toggle-black.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\toggle-gray.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\toggle-white.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\topic-type1.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\topic-type2.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\topic-type3.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\view-grid.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\view-list.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\vote-down-selected.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\vote-down.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\vote-up-selected.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\vote-up.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\watch.png" />
+    <None Remove="Themes\UniversityWafer\Content\images\wishlist-button.png" />
 
     <None Update="Areas\Admin\sitemap.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -60,7 +235,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Plugins\" />
+    <Folder Include="Plugins\Payments.PayflowPro\Views\Configure\" />
   </ItemGroup>
 
   <!-- This target execute after "Build" target.
