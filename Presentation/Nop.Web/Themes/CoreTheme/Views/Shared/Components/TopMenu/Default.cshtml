@@ -1,0 +1,101 @@
+﻿@model TopMenuModel
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-right">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <!--<div class="navbar-header">
+        <button aria-expanded="false" data-target="#mobile-menu" aria-controls="navbarSupportedContent" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-menu" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div id="mobile-menu" class="collapse navbar-collapse" style="flex-grow: 0;">
+        <ul class="nav navbar-nav mr-auto ml-auto d-none d-md-flex">
+            @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.HeaderMenuBefore })
+            @if (Model.DisplayHomepageMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("Homepage")" class="nav-link"><i class="fa fa-home fa-fw"></i></a></li>
+            }
+            @if (!Model.UseAjaxMenu)
+            {
+                var rootCategories = Model.Categories.Where(x => x.IncludeInTopMenu).ToList();
+                @foreach (var category in rootCategories)
+                {
+                    var categoryLineModel = new TopMenuModel.CategoryLineModel
+                    {
+                        Category = category
+                    };
+                    @await Html.PartialAsync("_CategoryLine.TopMenu", categoryLineModel)
+                }
+            }
+            @foreach (var topic in Model.Topics)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("Topic", new { SeName = topic.SeName })" class="nav-link">@topic.Name</a></li>
+            }
+            @if (Model.NewProductsEnabled && Model.DisplayNewProductsMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("NewProducts")" class="nav-link">@T("Products.NewProducts")</a></li>
+            }
+            @if (Model.DisplayProductSearchMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("ProductSearch")" class="nav-link">@T("Search")</a></li>
+            }
+            @if (Model.DisplayCustomerInfoMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("CustomerInfo")" class="nav-link">@T("Account.MyAccount")</a></li>
+            }
+            @if (Model.BlogEnabled && Model.DisplayBlogMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("Blog")" class="nav-link">@T("Blog")</a></li>
+            }
+            @if (Model.ForumEnabled && Model.DisplayForumsMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("Boards")" class="nav-link">@T("Forum.Forums")</a></li>
+            }
+            @if (Model.DisplayContactUsMenuItem)
+            {
+                <li class="nav-item"><a href="@Url.RouteUrl("ContactUs")" class="nav-link">@T("ContactUs")</a></li>
+            }
+            @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.HeaderMenuAfter })
+        </ul>
+    </div><!-- /.navbar-collapse -->
+</nav>
+@if (Model.UseAjaxMenu)
+{
+    <script asp-location="Footer">
+            $(document).ready(function () {
+                $('#mobile-menu .dropdown .fa-angle-down').on('click', function () {
+                    var $this = $(this);
+                    $this.siblings("ul.dropdown-menu").slideToggle("slow");
+                });
+                var localized_data = {
+                    AjaxFailure: "@T("MainMenu.AjaxFailure")"
+                };
+                mainMenu.init('@Url.RouteUrl("GetCatalogRoot")', '@Url.RouteUrl("GetCatalogSubCategories")', 'ul.top-menu.notmobile', 'ul.top-menu.mobile', localized_data);
+            });
+    </script>
+    Html.AppendScriptParts(ResourceLocation.Footer, "~/js/public.menu.js");
+}
+else
+{
+    <script asp-location="Footer">
+       $(document).ready(function () {
+            $("#mobile-menu .dropdown .fa-angle-down").on('click', function () {
+                var $this = $(this);
+                $this.siblings("ul.dropdown-menu").slideToggle("slow", function () {
+                    if ($this.siblings("ul.dropdown-menu").css('display') == 'block')
+                        $this.addClass("rotate");
+                    else if ($this.siblings("ul.dropdown-menu").css('display') == 'none')
+                        $this.removeClass("rotate");
+                });
+            });
+        });
+    </script>
+}
+

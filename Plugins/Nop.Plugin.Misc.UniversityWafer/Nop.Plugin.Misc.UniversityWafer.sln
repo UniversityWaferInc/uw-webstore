@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Misc.UniversityWafer", "Nop.Plugin.Misc.UniversityWafer.csproj", "{C8FFAF76-CEC9-476E-9202-096DDC12BC20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8FFAF76-CEC9-476E-9202-096DDC12BC20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8FFAF76-CEC9-476E-9202-096DDC12BC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8FFAF76-CEC9-476E-9202-096DDC12BC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8FFAF76-CEC9-476E-9202-096DDC12BC20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C2901B8D-DDE7-4956-9DF1-9FF58A6DA68B}
+	EndGlobalSection
+EndGlobal
