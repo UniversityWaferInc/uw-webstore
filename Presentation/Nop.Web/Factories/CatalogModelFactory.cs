@@ -467,28 +467,30 @@ namespace Nop.Web.Factories
             if (_catalogSettings.ShowProductsFromSubcategories)
                 categoryIds.AddRange(model.SubCategories.Select(sc => sc.Id));
 
+            //comment for more then one time product bind 
+
             //products
-            IList<int> alreadyFilteredSpecOptionIds = model.PagingFilteringContext.SpecificationFilter.GetAlreadyFilteredSpecOptionIds(_webHelper);
-            var products = _productService.SearchProducts(out var filterableSpecificationAttributeOptionIds,
-                true,
-                categoryIds: categoryIds,
-                storeId: _storeContext.CurrentStore.Id,
-                visibleIndividuallyOnly: true,
-                featuredProducts: _catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false,
-                priceMin: minPriceConverted,
-                priceMax: maxPriceConverted,
-                filteredSpecs: alreadyFilteredSpecOptionIds,
-                orderBy: (ProductSortingEnum)command.OrderBy,
-                pageIndex: command.PageNumber - 1,
-                pageSize: command.PageSize);
-            model.Products = _productModelFactory.PrepareProductOverviewModels(products).ToList();
+            //   IList<int> alreadyFilteredSpecOptionIds = model.PagingFilteringContext.SpecificationFilter.GetAlreadyFilteredSpecOptionIds(_webHelper);
+            //  var products = _productService.SearchProducts(out var filterableSpecificationAttributeOptionIds,
+            //      true,
+            //      categoryIds: categoryIds,
+            //      storeId: _storeContext.CurrentStore.Id,
+            //      visibleIndividuallyOnly: true,
+            //      featuredProducts: _catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false,
+            //      priceMin: minPriceConverted,
+            //      priceMax: maxPriceConverted,
+            //      filteredSpecs: alreadyFilteredSpecOptionIds,
+            //      orderBy: (ProductSortingEnum)command.OrderBy,
+            //      pageIndex: command.PageNumber - 1,
+            //      pageSize: command.PageSize);
+            ////  model.Products = _productModelFactory.PrepareProductOverviewModels(products).ToList();
 
-            model.PagingFilteringContext.LoadPagedList(products);
+            // // model.PagingFilteringContext.LoadPagedList(products);
 
-            //specs
-            model.PagingFilteringContext.SpecificationFilter.PrepareSpecsFilters(alreadyFilteredSpecOptionIds,
-                filterableSpecificationAttributeOptionIds?.ToArray(), _cacheKeyService,
-                _specificationAttributeService, _localizationService, _webHelper, _workContext, _staticCacheManager);
+            //  //specs
+            //  model.PagingFilteringContext.SpecificationFilter.PrepareSpecsFilters(alreadyFilteredSpecOptionIds,
+            //      filterableSpecificationAttributeOptionIds?.ToArray(), _cacheKeyService,
+            //      _specificationAttributeService, _localizationService, _webHelper, _workContext, _staticCacheManager);
 
             return model;
         }

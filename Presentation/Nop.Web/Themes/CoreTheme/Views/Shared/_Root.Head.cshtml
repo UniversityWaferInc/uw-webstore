@@ -15,15 +15,20 @@
 @inject IThemeContext themeContext
 @inject StoreInformationSettings storeInformationSettings
 @inject Nop.Services.Localization.ILanguageService languageService
-@{
-    var supportRtl = workContext.WorkingLanguage.Rtl;
+@{ var supportRtl = workContext.WorkingLanguage.Rtl;
     var themeName = themeContext.WorkingThemeName;
 
     Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery/jquery-3.5.1.min.js");
     Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery/popper-1.14.3.min.js");
     Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery-ui/jquery-ui-1.12.1.custom/jquery-ui.min.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "https://cdn.datatables.net/1.10.25/js/dataTables.jqueryui.min.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "https://cdn.datatables.net/scroller/2.0.4/js/dataTables.scroller.min.js");
+
     Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery-validate/jquery.validate-v1.19.1/jquery.validate.min.js");
     Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery-validate/jquery.validate.unobtrusive-v3.2.11/jquery.validate.unobtrusive.min.js");
+
+
 
     if (supportRtl)
     {
@@ -35,18 +40,18 @@
     }
 
     Html.AddScriptParts(ResourceLocation.Footer, "~/Themes/CoreTheme/Content/js/custom.js");
-    Html.AddScriptParts (ResourceLocation.Footer, "~/Themes/CoreTheme/Content/js/head.min.js");
-    Html.AddScriptParts (ResourceLocation.Footer, "~/js/public.countryselect.js");
-    Html.AddScriptParts (ResourceLocation.Footer, "~/js/public.ajaxcart.js");
-    Html.AddScriptParts (ResourceLocation.Footer, "~/js/public.common.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "~/Themes/CoreTheme/Content/js/head.min.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "~/js/public.countryselect.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "~/js/public.ajaxcart.js");
+    Html.AddScriptParts(ResourceLocation.Footer, "~/js/public.common.js");
     //when jQuery migrate script logging is active you will see the log in the browser console
     if (commonSettings.JqueryMigrateScriptLoggingActive)
     {
-        Html.AddScriptParts (ResourceLocation.Footer, "~/lib/jquery-migrate/jquery-migrate-3.3.2.js");
+        Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery-migrate/jquery-migrate-3.3.2.js");
     }
     else
     {
-        Html.AddScriptParts (ResourceLocation.Footer, "~/lib/jquery-migrate/jquery-migrate-3.3.2.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, "~/lib/jquery-migrate/jquery-migrate-3.3.2.min.js");
     }
     //custom tag(s);
     if (!string.IsNullOrEmpty(seoSettings.CustomHeadTags))
@@ -56,8 +61,7 @@
     var displayMiniProfiler = storeInformationSettings.DisplayMiniProfilerInPublicStore
         && (!storeInformationSettings.DisplayMiniProfilerForAdminOnly || permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel));
     //event
-    eventPublisher.Publish(new PageRenderingEvent(this.Html));
-}
+    eventPublisher.Publish(new PageRenderingEvent(this.Html)); }
 <!DOCTYPE html>
 <html lang="@languageService.GetTwoLetterIsoLanguageName(workContext.WorkingLanguage)" @(this.ShouldUseRtlTheme() ? Html.Raw(" dir=\"rtl\"") : null) @Html.NopPageCssClasses()>
 <head>
@@ -80,8 +84,8 @@
     @await Component.InvokeAsync("Favicon")
     @if (displayMiniProfiler)
     {
-        <mini-profiler />
-    }
+<mini-profiler />
+}
     @Html.NopInlineScripts(ResourceLocation.Head)
     <!--Powered by nopCommerce - http://www.nopCommerce.com-->
     <!--Theme Designed by nopAccelerate Themes - https://www.nopAccelerate.com/themes/ -->
@@ -89,6 +93,12 @@
     <!--[if lt IE 9]>
            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+
+    @*<style>
+        .ajax-loading-block-window {
+            display: block;
+        }
+    </style>*@
 </head>
 <body>
     @RenderBody()
