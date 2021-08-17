@@ -1,0 +1,155 @@
+﻿using System;
+using LinqToDB.Data;
+using Nop.Core.Domain.Catalog;
+using Nop.Data;
+using Nop.Plugin.Misc.UniversityWafer.Models;
+using Nop.Services.Catalog;
+using Nop.Services.Shipping.Date;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+
+
+namespace Nop.Plugin.Misc.UniversityWafer.Services
+{
+    public class UwCatalogService
+    {
+        private readonly INopDataProvider _nopDataProvider;
+        private readonly ISpecificationAttributeService _specificationAttributeService;
+        private readonly IDateRangeService _dateRangeSerivce;
+        public UwCatalogService(INopDataProvider nopDataProvider, ISpecificationAttributeService specificationAttributeService, IDateRangeService dateRangeSerivce)
+        {
+            _nopDataProvider = nopDataProvider;
+            _specificationAttributeService = specificationAttributeService;
+            _dateRangeSerivce = dateRangeSerivce;
+        }
+
+        public UWProductCatalog GetProductCatalog(int categoryId)
+        {
+            //comment for unused call of GetProductSpecificationAttributes
+            //var specs = _specificationAttributeService.GetProductSpecificationAttributes().Where(s => s.DisplayOrder < 100).ToList();
+
+            //for multiple query into one time execution or one trip to database
+            //start
+            string cmdText = @"select ProductId, Quantity, Price from TierPrice;
+
+                              SELECT p.Id, p.Name, Sku, FullDescription, StockQuantity, DisableBuyButton, AllowedQuantities, ProductAvailabilityRangeId FROM Product p
+                              INNER JOIN Product_Category_Mapping pcm ON pcm.ProductId = p.Id
+                              INNER JOIN Category c ON c.Id = pcm.CategoryId
+                              WHERE pcm.CategoryId = @CategoryId OR pcm.CategoryId IN (SELECT Id from Category WHERE ParentCategoryId = @CategoryId);
+                                
+                              select sa.Id, sa.Name, sao.Name AS 'ValueRaw', psm.ProductId from Product_SpecificationAttribute_Mapping psm
+                              inner join SpecificationAttributeOption sao on sao.Id = psm.SpecificationAttributeOptionId
+                              inner join SpecificationAttribute sa on sa.Id = sao.SpecificationAttributeId;";
+
+            List<TierPrice> tierPrices = new List<TierPrice>();
+            List<UWProductDetailsModel> products = new List<UWProductDetailsModel>();
+            List<UWProductDetailsModel.ProductSpecificationsModel> productsSpec = new List<UWProductDetailsModel.ProductSpecificationsModel>();
+
+            var leadTimes = _dateRangeSerivce.GetAllProductAvailabilityRanges();
+            var ConnectionString = DataSettingsManager.LoadSettings().ConnectionString;
+          
+            using (SqlConnection dbConnection = new SqlConnection(ConnectionString))
+            {
+                dbConnection.Open();
+                using (SqlCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    dbCommand.CommandText = cmdText;
+                    dbCommand.Parameters.AddWithValue("@CategoryId", categoryId);
+                    dbCommand.Connection = dbConnection;
+                    SqlDataAdapter adp = new SqlDataAdapter(dbCommand);
+                    DataSet ds = new DataSet();
+                    adp.Fill(ds);
+
+                    //release unused resources
+                    dbCommand.Dispose();
+                    adp.Dispose();
+                    dbConnection.Close();
+                    dbConnection.Dispose();
+
+                    //get all query data at once
+                    if (ds.Tables.Count > 0)
+                    {                       
+                        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                        {
+                            TierPrice obj = new TierPrice();
+                            obj.ProductId =Convert.ToInt32(ds.Tables[0].Rows[i]["ProductId"]);
+                            obj.Quantity = Convert.ToInt32(ds.Tables[0].Rows[i]["Quantity"]);
+                            obj.Price = Convert.ToDecimal(ds.Tables[0].Rows[i]["Price"]);
+                            tierPrices.Add(obj);
+                        }                        
+                        for (int i = 0; i < ds.Tables[2].Rows.Count; i++)
+                        {
+                            UWProductDetailsModel.ProductSpecificationsModel obj = new UWProductDetailsModel.ProductSpecificationsModel();
+                            obj.Id = Convert.ToInt32(ds.Tables[2].Rows[i]["Id"]);
+                            obj.Name = ds.Tables[2].Rows[i]["Name"].ToString() ;
+                            obj.ValueRaw = ds.Tables[2].Rows[i]["ValueRaw"].ToString();
+                            obj.ProductId =Convert.ToInt32(ds.Tables[2].Rows[i]["ProductId"]);
+                            productsSpec.Add(obj);
+                        }
+
+                        for (int i = 0; i < ds.Tables[1].Rows.Count; i++)
+                        {
+                            UWProductDetailsModel obj = new UWProductDetailsModel();
+                            obj.Id = Convert.ToInt32(ds.Tables[1].Rows[i]["Id"]);
+                            obj.Sku = ds.Tables[1].Rows[i]["Sku"].ToString();
+                            obj.FullDescription = ds.Tables[1].Rows[i]["FullDescription"].ToString();
+                            obj.StockQuantity = Convert.ToInt32(ds.Tables[1].Rows[i]["StockQuantity"]);
+                            obj.DisableBuyButton = Convert.ToBoolean(ds.Tables[1].Rows[i]["DisableBuyButton"]);
+                            obj.ProductAvailabilityRangeId = Convert.ToInt32(ds.Tables[1].Rows[i]["ProductAvailabilityRangeId"]);
+                            products.Add(obj);
+                        }
+                    }
+
+                    //release unused resource 
+                    ds.Dispose();
+                }
+            }
+            //end
+
+
+            //comment for multiple trip to database
+
+            //var tierPriceQuery = "select ProductId, Quantity, Price from TierPrice";
+
+            //var tierPricess = _nopDataProvider.Query<TierPrice>(tierPriceQuery);
+
+            //var leadTimes = _dateRangeSerivce.GetAllProductAvailabilityRanges();
+
+            ////var productQuery = @"SELECT p.Id, p.Name, Sku, FullDescription, StockQuantity, DisableBuyButton, AllowedQuantities, ProductAvailabilityRangeId FROM Product p
+            ////                    INNER JOIN Product_Category_Mapping pcm ON pcm.ProductId = p.Id
+            ////                    INNER JOIN Category c ON c.Id = pcm.CategoryId
+            ////                    WHERE pcm.CategoryId = @CategoryId OR pcm.CategoryId IN (SELECT Id from Category WHERE ParentCategoryId = @CategoryId)";
+            //var productQuery = @"SELECT p.Id, p.Name, Sku, FullDescription, StockQuantity, DisableBuyButton, AllowedQuantities, ProductAvailabilityRangeId FROM Product p
+            //                    INNER JOIN Product_Category_Mapping pcm ON pcm.ProductId = p.Id
+            //                    INNER JOIN Category c ON c.Id = pcm.CategoryId
+            //                    WHERE pcm.CategoryId = @CategoryId OR pcm.CategoryId IN (SELECT Id from Category WHERE ParentCategoryId = @CategoryId)";
+
+            //var parameters = new List<DataParameter>() { new DataParameter("CategoryId", categoryId) };
+
+            //var productss = _nopDataProvider.Query<UWProductDetailsModel>(productQuery, parameters.ToArray());
+
+            //var productsSpecQuery = @"select sa.Id, sa.Name, sao.Name AS 'ValueRaw', psm.ProductId from Product_SpecificationAttribute_Mapping psm
+            //                          inner join SpecificationAttributeOption sao on sao.Id = psm.SpecificationAttributeOptionId
+            //                          inner join SpecificationAttribute sa on sa.Id = sao.SpecificationAttributeId";
+
+            //var productsSpecs = _nopDataProvider.Query<UWProductDetailsModel.ProductSpecificationsModel>(productsSpecQuery);
+
+            foreach (var product in products)
+            {
+                product.ProductSpecifications = productsSpec.Where(sp => sp.ProductId.Equals(product.Id)).ToDictionary(s => s.Name, s => s.ValueRaw);
+                product.TierPrices = tierPrices.Where(tp => tp.ProductId.Equals(product.Id));
+                if (leadTimes.Any(lt => lt.Id.Equals(product.ProductAvailabilityRangeId)))
+                {
+                    product.LeadTime = leadTimes.First(lt => lt.Id.Equals(product.ProductAvailabilityRangeId)).Name;
+                }
+            }           
+            return new UWProductCatalog() {
+               UWProductDetails = products,
+               SpecificationAttributes = productsSpec.Select(s => s.Name).Distinct()
+            };
+        }
+
+    }
+}

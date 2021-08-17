@@ -1,0 +1,90 @@
+﻿@model ProductOverviewModel
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Domain.Tax
+@inject CatalogSettings catalogSettings
+@inject IWorkContext workContext
+@{
+    //prepare "Add to cart" AJAX link
+    var addtocartlink = "";
+    var shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart;
+    var quantity = 1;
+    if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = shoppingCartTypeId, quantity = quantity, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+    }
+    else
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = shoppingCartTypeId, quantity = quantity });
+    }
+
+    var addtowishlistlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist, quantity = quantity });
+    var addtocomparelink = Url.RouteUrl("AddProductToCompare", new { productId = Model.Id });
+
+    var productModelFactory = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Web.Factories.IProductModelFactory>();
+    var productService = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Services.Catalog.IProductService>();
+    var specService = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Services.Catalog.ISpecificationAttributeService>();
+    var leadTimeService = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Services.Shipping.Date.IDateRangeService>();
+
+    var allSpec = specService.GetSpecificationAttributes().Where(s => s.DisplayOrder < 100).ToList();
+
+    var product = productService.GetProductById(Model.Id);
+
+    var productDetail = productModelFactory.PrepareProductDetailsModel(product);
+    var tierPrices = productService.GetTierPricesByProduct(Model.Id);
+
+    var leadTimes = leadTimeService.GetAllProductAvailabilityRanges();
+    var leadTime = "";
+
+    if(leadTimes.Any(lt => lt.Id.Equals(product.ProductAvailabilityRangeId)))
+    {
+        leadTime = leadTimes.First(lt => lt.Id.Equals(product.ProductAvailabilityRangeId)).Name;
+    }
+
+    var prices = new[] { 1, 5, 10, 25, 50, 100, 200, 500 };
+}
+
+<tr>
+    <td style="max-width:75px;">
+        @if (!Model.ProductPrice.DisableBuyButton)
+        {           
+            var dataDictAddToCart = new ViewDataDictionary(ViewData);
+            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{productDetail.Id}";
+            @await Html.PartialAsync("_AddToCart", productDetail.AddToCart, dataDictAddToCart)
+        }
+    </td>
+    <td style="max-width:120px;">@Model.Sku</td>
+    @foreach (var spec in allSpec)
+    {
+        var finalSpec = "";       
+        if (productDetail.ProductSpecifications.Any(ps => ps.SpecificationAttributeId.Equals(spec.Id)))
+        {
+            finalSpec = productDetail.ProductSpecifications.First(p => p.SpecificationAttributeId.Equals(spec.Id)).ValueRaw;
+        }
+
+        <td>@Html.Raw(finalSpec)</td>
+    }
+    <td>@leadTime</td>
+    <td>@product.StockQuantity</td>
+    @foreach (var price in prices)
+    {
+        if (tierPrices.Any(tp => tp.Quantity.Equals(price)))
+        {
+            var tierPrice = tierPrices.First(tp => tp.Quantity.Equals(price));
+            if (tierPrice.Quantity != 25)
+            {
+                <td>@tierPrice.Price.ToString("c2")</td>
+            }
+            else
+            {
+                <td style="color:white;background-color:green;">@tierPrice.Price.ToString("c2")</td>
+            }
+        }
+        else
+        {
+            <td></td>
+        }
+    }
+    <td style="min-width:190px;">@Html.Raw(Model.FullDescription)</td>
+</tr>

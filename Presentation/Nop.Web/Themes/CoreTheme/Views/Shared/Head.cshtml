@@ -1,0 +1,65 @@
+﻿@using Nop.Core
+@using Nop.Services.Helpers
+@using Nop.Web.Framework.UI
+@inject IWorkContext workContext
+@inject IThemeContext themeContext
+@inject IUserAgentHelper userAgentHelper
+@{
+    var supportRtl = workContext.WorkingLanguage.Rtl;
+    var themeName = themeContext.WorkingThemeName;
+    var isIe8 = userAgentHelper.IsIe8();
+
+    //add browser specific CSS files
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    if (isIe8)
+    {
+        //Html.AppendCssFileParts($"~/Themes/{themeName}/Content/css/ie8.css");
+    }
+
+    //add main CSS file
+    if (supportRtl)
+    {
+        //RTL is not supported by Core Theme
+        Html.AppendCssFileParts($"~/Themes/{themeName}/Content/css/theme-styles-responsive-rtl.css");
+        Html.AppendCssFileParts($"~/Themes/{themeName}/Content/css/theme-styles-rtl.css");
+        Html.AppendCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.min.rtl.css");
+    }
+    else
+    {
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-grid.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-reboot.min.css");
+
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-table.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-table-filter-control.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-table-fixed-columns.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap-table-sticky-header.min.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/theme-styles-responsive.css");
+        Html.AddCssFileParts($"~/Themes/{themeName}/Content/css/theme-styles.css");
+
+
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-filter-control.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-fixed-columns.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-resizable.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-sticky-header.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-multiple-sort.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/bootstrap-table-mobile.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/utils.min.js");
+    }
+    Html.AppendCssFileParts($"~/Themes/{themeName}/Content/css/font-awesome.min.css");
+
+
+
+    //add jQuery UI css file
+    Html.AppendCssFileParts("~/lib/jquery-ui/jquery-ui-1.12.1.custom/jquery-ui.min.css");
+    //add browser specific JS files
+    if (isIe8)
+    {
+        Html.AddScriptParts(ResourceLocation.Footer, "~/lib/selectivizr.min.js");
+        Html.AddScriptParts(ResourceLocation.Footer, "~/lib/respond.min.js");
+    }
+}

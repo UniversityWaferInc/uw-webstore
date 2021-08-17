@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Misc",
+  "FriendlyName": "UniversityWafer",
+  "SystemName": "Misc.UniversityWafer",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.30" ],
+  "Author": "Ranjan Dahal",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.UniversityWafer.dll",
+  "Description": "This plugin allows to integrate with University Wafer Services"
+}
