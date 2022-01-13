@@ -1,0 +1,940 @@
+﻿@model ShoppingCartModel
+@using System;
+@using Nop.Core;
+@inject IWebHelper webHelper
+
+@{
+    var storeLocation = webHelper.GetStoreLocation();
+}
+@{
+    int CountryId = 0;
+    string FirstName = String.Empty;
+    string LastName = String.Empty;
+    string CompanyName = String.Empty;
+    string Address1 = String.Empty;
+    string Address2 = String.Empty;
+    string City = String.Empty;
+    int StateId = 0;
+    string ZipCode = String.Empty;
+    string PhoneNumber = String.Empty;
+    string EmailAddress = String.Empty;
+}
+
+@if (ViewBag.CustomerInfoModel != null)
+{
+    var customer = ViewBag.CustomerInfoModel;
+    CountryId = customer.CountryId;
+    FirstName = customer.FirstName;
+    LastName = customer.LastName;
+    CompanyName = customer.Company;
+    Address1 = customer.StreetAddress;
+    Address2 = customer.StreetAddress2;
+    City = customer.City;
+    StateId = customer.StateProvinceId;
+    ZipCode = customer.ZipPostalCode;
+    PhoneNumber = customer.Phone;
+    EmailAddress = customer.Email;
+}
+<div class="page-title panel-heading">
+    <h1>Request Quotation</h1>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-sm-6 col-sm-12 col-sm-6 border">
+            <form id="frmBillingAddress">
+                <div class="form-group">
+                    <div class="row" style="text-align: left;margin-top: 2%;">
+                        <h3 style="color: #d16603">Billing Address</h3>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="ddlCountry">Country:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="hidden" id="hdnCountryId" value="@CountryId" />
+                                <select id="ddlCountry" name="ddlCountry" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtFirstName">First Name:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtFirstName" id="txtFirstName" value="@FirstName" placeholder="First Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtLastName">Last Name:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtLastName" id="txtLastName" value="@LastName" placeholder="Last Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtCompanyName">Company Name:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtCompanyName" id="txtCompanyName" value="@CompanyName" placeholder="Company Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtAddress1">Address 1:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtAddress1" id="txtAddress1" value="@Address1" placeholder="Address 1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtAddress2">Address 2:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtAddress2" id="txtAddress2" value="@Address2" placeholder="Address 2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtCity">City:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtCity" id="txtCity" value="@City" placeholder="City">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="ddlState">State/Province:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="hidden" id="hdnStateId" value="@StateId" />
+                                <select id="ddlState" name="ddlState" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="ddlState">ZIP/Postal Code:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtZip" id="txtZip" value="@ZipCode" placeholder="ZIP/Postal Code">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtPhoneNumber">Phone Number:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtPhoneNumber" id="txtPhoneNumber" value="@PhoneNumber" placeholder="Phone Number">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtEmailAddress">Email Address:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="txtEmailAddress" id="txtEmailAddress" value="@EmailAddress" placeholder="Email Address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="txtReEnterEmailAddress">Re-Enter Email Address:</label>
+                        </div>
+                        <div class="col-8">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="txtReEnterEmailAddress" name="txtReEnterEmailAddress" value="@EmailAddress" placeholder="Re-Enter Email Address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtVATCode">VAT Code (Optional):</label>
+                            </div><div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtVATCode" name="txtVATCode" placeholder="VAT Code">
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+                @*</form>*@
+                <div class="form-group">
+                    <div class="row" style="text-align: left;margin-top: 2%;">
+                        <h3 style="color: #d16603">Shipping Address</h3>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:2%">
+                    <div class="row">
+                        <div class="col-6">
+                            <input class="forcheckbox shippingaddress" type="radio" value="true" checked id="rdbShipToBillingAddress" name="shippingaddress">
+                            <label for="rdbShipToBillingAddress">Ship to my billing address</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <input class="forcheckbox shippingaddress" type="radio" value="false" id="rdbShipToDifferentAddress" name="shippingaddress">
+                            <label for="rdbShipToDifferentAddress">Ship to a different address</label>
+                        </div>
+                    </div>
+                </div>
+                @*<form id="frmShippingAddress">*@
+                <div id="divDifferentShippingAddress" style="display:none;">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="ddlCountryDSA">Country:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <select id="ddlCountryDSA" name="ddlCountryDSA" class="form-control"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtFirstNameDSA">First Name:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtFirstNameDSA" name="txtFirstNameDSA" placeholder="First Name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtLastNameDSA">Last Name:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtLastNameDSA" name="txtLastNameDSA" placeholder="Last Name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtCompanyNameDSA">Company Name:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtCompanyNameDSA" name="txtCompanyNameDSA" placeholder="Company Name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtAddress1DSA">Address 1:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="txtAddress1DSA" id="txtAddress1DSA" placeholder="Address 1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtAddress2DSA">Address 2:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtAddress2DSA" name="txtAddress2DSA" placeholder="Address 2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtCityDSA">City:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtCityDSA" name="txtCityDSA" placeholder="City">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="ddlStateDSA">State/Province:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <select id="ddlStateDSA" name="ddlStateDSA" class="form-control"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtZipDSA">ZIP/Postal Code:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="txtZipDSA" name="txtZipDSA" placeholder="ZIP/Postal Code">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:2%">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="txtPhoneNumberDSA">Phone Number:</label>
+                            </div>
+                            <div class="col-8">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="txtPhoneNumberDSA" id="txtPhoneNumberDSA" placeholder="Phone Number">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="form-group">
+                <div class="row" style="text-align: left;margin-top: 2%;">
+                    <h3 style="color: #d16603">Shipping Methods</h3>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:2%">
+                <form id="frmShippingOption">
+                    @{
+                    int i = 0;
+                    foreach (var sm in ViewBag.ShippingMethodModel)
+                    {
+                        if (i == 0)
+                        {
+                        <div class="row">
+                            <div class="col-6">
+
+                                <input class="forcheckbox" checked type="radio" value="@{@sm.Name}_Shipping.FixedByWeightByTotal" id="shippingoption" name="shippingoption" onclick="CalculateOrderTotal()">
+                                <label for="rdbShippedMethod_@sm.Name">@{@sm.Name} (@sm.Fee)</label>
+
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                        <div class="row">
+                            <div class="col-6">
+                                <input class="forcheckbox" type="radio" value="@{@sm.Name}_Shipping.FixedByWeightByTotal" id="shippingoption" name="shippingoption" onclick="CalculateOrderTotal()">
+                                <label for="rdbShippedMethod_@sm.Name">@{@sm.Name} (@sm.Fee)</label>
+                            </div>
+                        </div>
+                        }
+                        i++;
+                    }
+                    }
+                </form>
+
+            </div>
+
+        </div>
+
+        
+        <div class="col-sm-6 col-sm-12 col-sm-6 border">
+        <div class="border" style="margin-top:2%">
+            <div class="form-group" style="width: 100%;">
+                <div>
+                    <h3 style="margin-top: 4%;color:#d16603;">University Wafers</h3>
+                </div>
+                @{
+                    if (Model.Items.Count != 0)
+                    {
+                    <div>
+                        <div style="overflow-x:auto;">
+                            <table class="table" style="margin-top:2%;margin-right: 6%;">
+                                <tr>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        Product Name
+                                    </th>
+                                    <th>
+                                        Qty
+                                    </th>
+                                    <th>
+                                        Price
+                                    </th>
+                                    <th>
+                                        Total
+                                    </th>
+                                </tr>
+
+                                @foreach (var product in Model.Items)
+                                {
+                                <tr>
+                                    <td>
+                                        @product.Sku
+                                    </td>
+                                    <td>
+                                        @product.ProductName
+                                    </td>
+                                    <td>
+                                        @product.Quantity
+                                    </td>
+                                    <td>
+                                        @product.UnitPrice
+                                    </td>
+                                    <td>
+                                        @product.SubTotal
+                                    </td>
+                                </tr>
+                                }
+                            </table>
+                        </div>
+
+                    </div>
+                    }
+                }
+            </div>
+        </div>
+            <div class="border" style="margin-top:2%;margin-bottom:4%">
+                <div class="form-group" style="width: 100%;">
+                    <div class="row" style="text-align: left;margin-left: 0%;margin-top: 2%;">
+                        <h3 style="margin-top: 2%;color:#d16603;">Order Summary</h3>
+                    </div>
+                    @if (Model.Items.Count != 0)
+                {
+                    <div class="row">
+                        @{
+                            decimal subTotal = 0;
+                            foreach (var product in Model.Items)
+                            {
+                                string[] val = product.SubTotal.Split(ViewBag.Currency);
+                                subTotal = subTotal + Convert.ToDecimal(val[1]);
+                            }
+                            <div class="col-sm-5">
+                                <h5 style="margin-left: 2%;margin-top: 2%;">Sub Total:</h5>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="hidden" id="hdnSubTotal" value="@subTotal" />
+                                <h6 style="margin-left: 2%; margin-top: 2%;">@ViewBag.Currency@subTotal</h6>
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <h5 style="margin-left: 2%; margin-top: 2%;">Shipping Charges:</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="hidden" id="hdnShippingCharge" />
+                            <h6 style="margin-left: 2%; margin-top: 2%;" id="hdgShippingCharge"></h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <h5 style="margin-left: 2%; margin-top: 2%;">Total:</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="hidden" value="@ViewBag.Currency" id="hdnCurrency" />
+                            <input type="hidden" id="hdnTotal" />
+                            <h6 style="margin-left: 2%; margin-top: 2%;" id="hdgTotal"></h6>
+                        </div>
+                    </div>
+                }
+
+                </div>
+            </div>
+        </div>
+
+            
+        
+
+
+    </div>
+    <div class="form-group" style="margin-top:2%">
+        <div style="text-align:center;margin-bottom:4%">
+            @*<button type="submit" class="btn btn-primary">Request PDF Quote</button>*@
+            <input type="button" class="btn btn-primary" id="btnRequestPDFQuote" value="Request PDF Quote" />
+            @*<a class="btn btn-primary" onclick="CalculateShippingCharge()">Request PDF Quote</a>*@
+            @*<button type="submit" class="btn btn-primary" onclick="CalculateShippingCharge()">Request PDF Quote</button>*@
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Warning Message -->
+<div class="modal fade" id="mdlMessage" tabindex="-1" role="dialog" aria-labelledby="mdlMessage" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseMessage">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdnProductId" value="" />
+                <h6 class="modal-title" id="hdg">Cart is empty!</h6><br />
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal PDF Message -->
+<div class="modal fade" id="mdlPDFMessage" tabindex="-1" role="dialog" aria-labelledby="mdlMessage" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnClosePDFMessage">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdnPDFId" value="" />
+                <h6 class="modal-title" id="hdg" style="text-align:center">Request PDF Quote Send Successfully!</h6><br />
+                </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib_npm/jquery/jquery.min.js"></script>
+<script src="~/lib_npm/jquery-validation/jquery.validate.min.js"></script>
+<script src="~/lib_npm/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        DdlCountry('ddlCountry');
+        if ($("#hdnCountryId").val() != null && $("#hdnCountryId").val() != "") {
+            $("#ddlCountry").val($("#hdnCountryId").val());
+        }
+        if ($("#hdnStateId").val() != null && $("#hdnStateId").val() != "") {
+            DdlState('ddlState', $("#hdnCountryId").val());
+            $("#ddlState").val($("#hdnStateId").val());
+        }
+        @{
+            @if(ViewBag.Cart.Count!=0){
+            <text>
+                CalculateOrderTotal();
+            </text>
+            }
+            else{
+            <text>
+                $("#btnRequestPDFQuote").prop('disabled', true);
+                $("#mdlMessage").modal('show');
+            </text>
+            }
+       }
+        ValidateFormBillingAddress();
+    });
+
+    //#region Functions
+
+    //function for clrear different shipping address controls
+    function ClearDifferentShippingAddressControls() {
+        $("#ddlCountryDSA").empty();
+        $("#txtFirstNameDSA").val('');
+        $("#txtLastNameDSA").val('');
+        $("#txtCompanyNameDSA").val('');
+        $("#txtAddress1DSA").val('');
+        $("#txtAddress2DSA").val('');
+        $("#txtCityDSA").val('');
+        $("#ddlStateDSA").empty();
+        $("#txtCityDSA").val('');
+        $("#txtZipDSA").val('');
+        $("#txtPhoneNumberDSA").val('');
+    }
+
+    //function to add new quote request
+    function AddQuoteRequest() {
+        debugger;
+        var isShippingAddressSame = $('input[name="shippingaddress"]:checked').val();
+        console.log("isShippingAddressSame",isShippingAddressSame);
+        if (isShippingAddressSame == 'false') {
+            console.log("entered shippingaddress false")
+            $("#txtFirstNameDSA").rules("add", {
+                required: true,
+                alphabets:true,
+                messages: {
+                    required: "FirstName Is Required!"
+                }
+            });
+            $("#txtLastNameDSA").rules("add", {
+                required: true,
+                alphabets: true,
+                messages: {
+                    required: "LastName Is Required!"
+                }
+            });
+            $("#ddlCountryDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "Country Is Required!"
+                }
+            });
+            $("#txtCompanyNameDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "CompanyName Is Required!"
+                }
+            });
+            $("#txtAddress1DSA").rules("add", {
+                required: true,
+                address:true,
+                messages: {
+                    required: "Address1 Is Required!"
+                }
+            });
+            $("#txtCityDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "City Is Required!"
+                }
+            });
+            $("#ddlStateDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "State Is Required!"
+                }
+            });
+            $("#txtZipDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "ZipCode Is Required!"
+                }
+            });
+            $("#txtPhoneNumberDSA").rules("add", {
+                required: true,
+                messages: {
+                    required: "PhoneNumber Is Required!"
+                }
+            });
+        }
+        else {
+            console.log("else")
+            $("#txtFirstNameDSA").rules('remove');
+            $("#txtLastNameDSA").rules('remove');
+            $("#ddlCountryDSA").rules('remove');
+            $("#txtCompanyNameDSA").rules('remove');
+            $("#txtAddress1DSA").rules('remove');
+            $("#txtCityDSA").rules('remove');
+            $("#ddlStateDSA").rules('remove');
+            $("#txtZipDSA").rules('remove');
+            $("#txtPhoneNumberDSA").rules('remove');
+        }
+        //console.log("enter:AddQuoteRequest");
+        //console.log("rdbshipping",$('input[name="shippingaddress"]:checked').val());
+        var valid = $("#frmBillingAddress").valid();
+        if ($("#frmBillingAddress").valid() == false) {
+            console.log("enter validation frmBillingAddress")
+            return false
+        }
+        $("#btnRequestPDFQuote").prop('disabled', true);
+        $.ajax({
+            type: "POST",
+            url: "/Quotation/AddQuoteRequest",
+            data: {
+                FirstName: $("#txtFirstName").val(),
+                LastName: $("#txtLastName").val(),
+                Email: $("#txtEmailAddress").val(),
+                Company: $("#txtCompanyName").val(),
+                CountryId: $("#ddlCountry option:selected").val(),
+                StateProvinceId: $("#ddlState option:selected").val(),
+                CountryName: $("#ddlCountry option:selected").text(),
+                City: $("#txtCity").val(),
+                Address1: $("#txtAddress1").val(),
+                Address2: $("#txtAddress2").val(),
+                ZipPostalCode: $("#txtZip").val(),
+                PhoneNumber: $("#txtPhoneNumber").val(),
+                SubTotal: $("#hdnSubTotal").val(),
+                OrderTotal: $("#hdnTotal").val(),
+                ShippingCharge: $("#hdnShippingCharge").val(),
+                IsShippingAddressSame: $('input[name="shippingaddress"]:checked').val(),
+                //for different shipping address from billing address
+                CountryIdDSA: $("#ddlCountryDSA").val(),
+                CountryNameDSA: $("#ddlCountryDSA").text(),
+                FirstNameDSA: $("#txtFirstNameDSA").val(),
+                LastNameDSA: $("#txtLastNameDSA").val(),
+                CompanyNameDSA: $("#txtCompanyNameDSA").val(),
+                Address1DSA: $("#txtAddress1DSA").val(),
+                Address2DSA: $("#txtAddress2DSA").val(),
+                CityDSA: $("#txtCityDSA").val(),
+                StateIdDSA: $("#ddlStateDSA").val(),
+                ZipPostalCodeDSA: $("#txtZipDSA").val(),
+                PhoneNumberDSA: $("#txtPhoneNumberDSA").val(),
+            },
+            dataType: "json",
+            success: function (res) {
+                $("#btnRequestPDFQuote").prop('disabled', false);
+                console.log("cal", res);
+
+
+                $("#mdlPDFMessage").modal('show');
+                if (res.filename != null && res.filename != "") {
+                    window.location.href = "/Quotation/Download?filename=" + res.filename;
+                }
+              // window.location.href = "/aluminum";
+
+
+            }
+        });
+    }
+
+    //function for calculate order total
+    function CalculateOrderTotal() {
+        var currency = $("#hdnCurrency").val();
+        $.ajax({
+            url: "/Quotation/CalculateOrderTotal",
+            dataType: 'json',
+            type: 'GET',
+            data: {
+                SubTotal: $("#hdnSubTotal").val(),
+                ShippingOption: $('input[name="shippingoption"]:checked').val()
+            },
+            success: function (res) {
+                console.log(res)
+                if (res != null) {
+                    if (res.shippingCharge)
+                        $("#hdnShippingCharge").val(res.shippingCharge);
+                    $("#hdgShippingCharge").html(currency + '' + res.shippingCharge);
+                    $("#hdgTotal").html(res.result);
+                    $("#hdnTotal").val(res.Total);
+                }
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region DropDownList
+
+    //function for bind country drop down list by drop down list id
+    function DdlCountry(ddlID) {
+        $.ajax({
+            url: "/Quotation/DdlCountry",
+            dataType: 'json',
+            type: 'GET',
+            async: false,
+            success: function (res) {
+                console.log('res', res);
+                $("#" + ddlID).empty();
+                $("#" + ddlID).append('<option value="">--Select Country--</option>');
+                $.each(res, function (i, val) {
+                    $("#" + ddlID).append('<option value="' + val.Id + '">' + val.Name + '</option>');
+                });
+            }
+        });
+    }
+
+    //function for bind state dropdown list by country id and drop down list id
+    function DdlState(ddlID, countryID) {
+        $.ajax({
+            url: "/Quotation/DdlState",
+            dataType: 'json',
+            type: 'GET',
+            data: {
+                ID: countryID
+            },
+            async: false,
+            success: function (res) {
+                console.log('stateres', res);
+                $("#" + ddlID).empty();
+                $("#" + ddlID).append('<option value="">--Select State--</option>');
+                $.each(res, function (i, val) {
+                    $("#" + ddlID).append('<option value="' + val.Id + '">' + val.Name + '</option>');
+                });
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region Events
+
+    //on change
+    $(".shippingaddress").on('change', function () {
+        if ($(this).val() != "true") {
+            DdlCountry('ddlCountryDSA');
+            $("#divDifferentShippingAddress").css('display', 'block');
+        }
+        else {
+            $("#divDifferentShippingAddress").css('display', 'none');
+            ClearDifferentShippingAddressControls();
+        }
+    });
+    $("#ddlCountry").on('change', function () {
+        var countryID = $("#ddlCountry option:selected").val();
+        DdlState('ddlState', countryID);
+    });
+    $("#ddlCountryDSA").on('change', function () {
+        var countryID = $("#ddlCountryDSA option:selected").val();
+        DdlState('ddlStateDSA', countryID);
+    });
+    //$("#shippingoption").on('change', function () {
+    //    $('html, body').animate({
+    //        scrollTop: $("#hdgTotal").offset().top
+    //    }, 2000);
+    //});
+
+
+    //click
+    $("#btnRequestPDFQuote").click(function () {
+        AddQuoteRequest();
+    });
+    $("#btnCloseMessage").click(function () {
+        window.location.href = "/aluminum";
+    });
+    $("#btnClosePDFMessage").click(function () {
+        window.location.href = "/aluminum";
+    });
+    //#endregion
+
+    //#region Validation
+
+    //function to validate form billing address
+    function ValidateFormBillingAddress() {
+         jQuery.validator.addMethod("customemail", function (value, element) {
+        return /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(value);
+         }, "Please enter valid email address format!");
+        jQuery.validator.addMethod("alphabets", function (value, element) {
+            return /^[a-zA-Z\s]+$/.test(value);
+        }, "Only alphabets are allowed!");
+        jQuery.validator.addMethod("address", function (value, element) {
+            return /^[a-zA-Z0-9,. ]*$/.test(value);
+        }, "Please enter the valid address format!");
+        $("#frmBillingAddress").validate({
+            rules: {
+                ddlCountry: {
+                    required: true
+                },
+                txtFirstName: {
+                    required: true,
+                    alphabets:true
+                },
+                txtLastName: {
+                    required: true,
+                    alphabets: true
+                },
+                txtCompanyName: {
+                    required: true
+                },
+                txtAddress1: {
+                    required: true,
+                    address:true
+                },
+                //txtAddress2: {
+                //required: true,
+                //address: true
+                //},
+                txtCity: {
+                    required: true
+                },
+                ddlState: {
+                    required: true
+                },
+                txtZip: {
+                    required: true
+                },
+                //txtPhoneNumber: {
+                //    required: true
+                //},
+                txtEmailAddress: {
+                    required: true,
+                    customemail:true
+                },
+            },
+            messages: {
+                ddlCountry: {
+                    required:"Country is required!"
+                },
+                txtFirstName: {
+                    required:"FirstName is required!"
+                },
+                txtLastName: {
+                    required:"LastName is required!"
+                },
+                txtCompanyName: {
+                    required: "CompanyName is required!"
+                },
+                txtAddress1: {
+                    required: "Address1 is required!"
+                },
+                //txtAddress2: {
+                //    required: "Address2 is required!"
+                //},
+                txtCity: {
+                    required: "City is required!"
+                },
+                ddlState: {
+                    required: "State is required!"
+                },
+                txtZip: {
+                    required: "ZipCode is required!"
+                },
+                //txtPhoneNumber: {
+                //    required: "PhoneNumber is required!"
+                //},
+                txtEmailAddress: {
+                    required: "EmailAddress is required!"
+                },
+            }
+        });
+    }
+
+    //#endregion
+
+
+</script>

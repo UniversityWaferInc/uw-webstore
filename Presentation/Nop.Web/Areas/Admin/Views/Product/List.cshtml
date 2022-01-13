@@ -1,0 +1,599 @@
+﻿@model ProductSearchModel
+
+@using Nop.Core.Domain.Common
+@using Nop.Core.Domain.Seo
+@using Nop.Services.Catalog
+@using Nop.Core.Domain.Catalog
+@using Nop.Web.Models.Catalog
+@using Nop.Services.CustomCode
+@inject Nop.Core.IWebHelper webHelper
+@inject SeoSettings seoSettings
+@inject CommonSettings commonSettings
+@using Nop.Core.Domain.Orders
+
+@{ var shoppintCartId = (int)ShoppingCartType.ShoppingCart; }
+
+@{
+    const string hideSearchBlockAttributeName = "ProductListPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSearchBlockAttributeName);
+}
+
+
+<style>
+    table.dataTable thead th.ui-state-default {
+        background: #555656;
+        color: white;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .ui-widget-header {
+        background: #555656 !important;
+    }
+
+    thead input {
+        width: 100%;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    /* Smartphones (landscape) ----------- */
+    @@media only screen and (min-width : 360px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+    /* Smartphones (portrait) ----------- */
+    @@media only screen and (min-width: 361px) and (max-width: 768px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+
+    /* iPads (portrait and landscape) ----------- */
+    @@media only screen and (min-device-width : 769px) and (max-device-width : 1024px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-xl {
+            width: 90%;
+            max-width: 1200px;
+        }
+    }
+
+    #btnContinueShoping {
+        background: #e8ad3f;
+    }
+
+    #btnCheckout {
+        background: green;
+    }
+
+    #btnGetPDFQuote {
+        background: #f93f3f87;
+    }
+</style>
+
+
+<form asp-controller="Product" asp-action="List" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.Catalog.Products")
+        </h1>
+        <div class="float-right">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus-square"></i>
+                @T("Admin.Common.AddNew")
+            </a>
+            <button asp-action="DownloadCatalogPDF" type="submit" name="download-catalog-pdf" class="btn bg-purple">
+                <i class="far fa-file-pdf"></i>
+                @T("Admin.Catalog.Products.List.DownloadPDF")
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">
+                    <i class="fas fa-download"></i>
+                    @T("Admin.Common.Export")
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">&nbsp;</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li class="dropdown-item">
+
+                        <button asp-action="ExportToXml" type="submit" name="exportxml-all">
+                            <i class="far fa-file-code"></i>
+                            @T("Admin.Common.ExportToXml.All")
+                        </button>
+                    </li>
+                    <li class="dropdown-item">
+
+                        <button type="button" id="exportxml-selected">
+                            <i class="far fa-file-code"></i>
+                            @T("Admin.Common.ExportToXml.Selected")
+                        </button>
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li class="dropdown-item">
+                        <button asp-action="ExportToExcel" type="submit" name="exportexcel-all">
+                            <i class="far fa-file-excel"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button type="button" id="exportexcel-selected">
+                            <i class="far fa-file-excel"></i>
+                            @T("Admin.Common.ExportToExcel.Selected")
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            @if (!Model.IsLoggedInAsVendor || Model.AllowVendorsToImportProducts)
+            {
+                //a vendor cannot import products
+                <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+                    <i class="fas fa-upload"></i>
+                    @T("Admin.Common.Import")
+                </button>
+            }
+            <button type="button" id="delete-selected" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.Common.Delete.Selected")
+            </button>
+            <nop-action-confirmation asp-button-id="delete-selected" />
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.ProductListButtons })
+        </div>
+    </div>
+
+    @*import products form*@
+    <div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <form asp-controller="Product" asp-action="ImportExcel" method="post" enctype="multipart/form-data">
+                    <div class="form-horizontal">
+                        <div class="modal-body">
+                            <ul class="common-list">
+                                <li>
+                                    <em>@T("Admin.Catalog.Products.List.ImportFromExcelTip")</em>
+                                </li>
+                                <li>
+                                    <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                                </li>
+                            </ul>
+                            <div class="form-group row">
+                                <div class="col-md-2">
+                                    <div class="label-wrapper">
+                                        <label class="col-form-label">
+                                            @T("Admin.Common.ExcelFile")
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                @T("Admin.Common.ImportFromExcel")
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    @*<form asp-controller="Product" asp-action="List" method="post">*@
+    @*<form>*@
+        <section class="content">
+            <div class="container-fluid">
+                <div class="form-horizontal">
+                    @*<div class="card card-default card-search">
+                            <div class="card-body">
+                                <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                                    <div class="search-text">@T("Admin.Common.Search")</div>
+                                    <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                                    <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                                </div>
+
+                                <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchProductName" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchProductName" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" @(Model.AvailableCategories.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchCategoryId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchCategoryId" asp-items="Model.AvailableCategories" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" @(Model.AvailableCategories.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchIncludeSubCategories" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchIncludeSubCategories" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" @(Model.AvailableManufacturers.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchManufacturerId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchManufacturerId" asp-items="Model.AvailableManufacturers" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" @(Model.AvailableVendors.SelectionIsNotPossible() || Model.IsLoggedInAsVendor ? Html.Raw("style='display: none;'") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchVendorId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchVendorId" asp-items="Model.AvailableVendors" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group row" @(Model.HideStoresList ? Html.Raw("style=\"display:none\"") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchStoreId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchStoreId" asp-items="Model.AvailableStores" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" @(Model.AvailableWarehouses.SelectionIsNotPossible() ? Html.Raw("style=\"display:none\"") : null)>
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchWarehouseId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchWarehouseId" asp-items="Model.AvailableWarehouses" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchProductTypeId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchProductTypeId" asp-items="Model.AvailableProductTypes" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchPublishedId" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-select asp-for="SearchPublishedId" asp-items="Model.AvailablePublishedOptions" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="GoDirectlyToSku" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="input-group input-group-short">
+                                                        <nop-editor asp-for="GoDirectlyToSku" />
+                                                        <span class="input-group-append">
+                                                            <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" class="btn btn-info btn-flat">
+                                                                @T("Admin.Common.Go")
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-center col-12">
+                                            <button type="button" id="search-products" class="btn btn-primary btn-search">
+                                                <i class="fas fa-search"></i>
+                                                @T("Admin.Common.Search")
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
+
+                    <div class="card card-default">
+                        <div class="card-body">
+                            <div class="page category-page from-panel">
+                                <div class="page-title panel-heading">
+                                </div>
+                                <div class="page-body panel-body">
+                                    <div style="overflow-x:auto;">
+                                        <div class="container-fluid">
+                                            <div class="col-12" style="text-align: right;">
+                                                <p style="">Search :&nbsp; <input type="text" id="tblSearch"></p>
+                                            </div>
+                                        </div>
+                                        <table class="table table-striped table-bordered table-sm text-center" id="products-grid" cellspacing="0" width="100%">
+                                            <thead class="sticky-header">
+                                                <tr style="background-color: #f4f4f4;">
+                                                    <th><input class="mastercheckbox" type="checkbox" /></th>
+                                                    <th>Edit</th>
+                                                    <th>Picture</th>
+                                                    <th>Product name</th>
+                                                    <th>SKU</th>
+                                                    <th>Price</th>
+                                                    <th>Stock quantity</th>
+
+                                                    <th>Published</th>
+                                                    <th>Diameter</th>
+                                                    <th>Type</th>
+                                                    <th>Dopant</th>
+                                                    <th>Orientation</th>
+
+                                                    <th>ResistivityMin</th>
+                                                    <th>ResistivityMax</th>
+                                                    <th>Thickness</th>
+                                                    <th>Polish</th>
+                                                    <th>Grade</th>
+
+                                                    <th>Resistivity</th>
+                                                    <th>Flat</th>
+                                                    <th>Full description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @*</form>*@
+</form>
+
+
+@*export selected (XML). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-controller="Product" asp-action="ExportXmlSelected" method="post" id="export-xml-selected-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#exportxml-selected').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            if (!ids) {
+                $('#exportXmlSelected-info').text("@T("Admin.Products.NoProducts")");
+                $("#exportXmlSelected").click();
+            }
+            else {
+                $('#export-xml-selected-form #selectedIds').val(ids);
+                $('#export-xml-selected-form').submit();
+                updateTable('#products-grid');
+            }
+            return false;
+        });
+    });
+</script>
+<nop-alert asp-alert-id="exportXmlSelected" />
+
+@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-controller="Product" asp-action="ExportExcelSelected" method="post" id="export-excel-selected-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+        $(document).ready(function () {
+            $('#exportexcel-selected').click(function (e) {
+                e.preventDefault();
+                var ids = selectedIds.join(",");
+                 if (!ids) {
+                    $('#exportExcelSelected-info').text("@T("Admin.Products.NoProducts")");
+                    $("#exportExcelSelected").click();
+                }
+                else {
+                    $('#export-excel-selected-form #selectedIds').val(ids);
+                    $('#export-excel-selected-form').submit();
+                    updateTable('#products-grid');
+                }
+                return false;
+            });
+        });
+</script>
+<nop-alert asp-alert-id="exportExcelSelected" />
+
+
+<script asp-location="Footer">
+    var selectedIds = [];
+
+    function updateMasterCheckbox() {
+        var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]').length;
+        var numChkBoxesChecked = $('#products-grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked').length;
+        $('#mastercheckbox').prop('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+    }
+
+    function clearMasterCheckbox() {
+        $('#mastercheckbox').prop('checked', false).change();
+        selectedIds = [];
+    }
+
+    function updateTableSrc(tableSelector) {
+        var dataSrc = $(tableSelector).DataTable().data();
+        $(tableSelector).DataTable().clear().rows.add(dataSrc).draw();
+        $(tableSelector).DataTable().columns.adjust();
+        clearMasterCheckbox();
+    }
+
+    function updateTable(tableSelector) {
+        $(tableSelector).DataTable().ajax.reload();
+        $(tableSelector).DataTable().columns.adjust();
+        clearMasterCheckbox();
+    }
+
+    function updateTableWidth(tableSelector) {
+        if ($.fn.DataTable.isDataTable(tableSelector)) {
+            $(tableSelector).DataTable().columns.adjust();
+        }
+    }
+</script>
+
+<script>
+    $(".mastercheckbox", $("#products-grid").parents(".dataTables_scroll").first()).first().click(function () {
+        $("#products-grid .checkboxGroups").prop("checked", $(this).is(":checked")).change()
+        //checkbox_products
+        //$('.checkboxGroups').on('change', 'input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]', function (e) {
+
+        var checked = jQuery.inArray($check.val(), selectedIds);
+        if ($check.is(':checked') == true) {
+            if (checked == -1) {
+                selectedIds.push($check.val());
+            }
+        } else if (checked > -1) {
+            selectedIds = $.grep(selectedIds, function (item, index) {
+                return item != $check.val();
+            });
+        }
+        updateMasterCheckbox();
+    });
+    $('.checkboxGroups input[type=checkbox]').change(function (e) {
+        //var $check = $(this);
+        //console.log("$check", $check);
+        console.log("$check");
+    });
+
+</script>
+
+<script asp-location="Footer">
+
+    $(function () {
+        LoadAllProducts();
+    });
+
+    //function for bind jquery datatable to product table
+    function BindDataTable(res) {
+        var rows = '';
+        $.each(res, function (i, val) {
+
+            var Diameter = val.Diameter != null && val.Diameter != "" ? '<td>' + val.Diameter + '</td>' : "<td></td>";
+            var Type = val.Type != null && val.Type != "" ? '<td>' + val.Type + '</td>' : "<td></td>";
+            var Dopant = val.Dopant != null && val.Dopant != "" ? '<td>' + val.Dopant + '</td>' : "<td></td>";
+            var Orientation = val.Orientation != null && val.Orientation != "" ? '<td>' + val.Orientation + '</td>' : "<td></td>";
+            var ResistivityMin = val.ResistivityMin != null && val.ResistivityMin != "" ? '<td>' + val.ResistivityMin + '</td>' : "<td></td>";
+            var ResistivityMax = val.ResistivityMax != null && val.ResistivityMax != "" ? '<td>' + val.ResistivityMax + '</td>' : "<td></td>";
+            var Thickness = val.Thickness != null && val.Thickness != "" ? '<td>' + val.Thickness + '</td>' : "<td></td>";
+            var Polish = val.Polish != null && val.Polish != "" ? '<td>' + val.Polish + '</td>' : "<td></td>";
+            var Grade = val.Grade != null && val.Grade != "" ? '<td>' + val.Grade + '</td>' : "<td></td>";
+            var Resistivity = val.Resistivity != null && val.Resistivity != "" ? '<td>' + val.Resistivity + '</td>' : "<td></td>";
+            var Flat = val.Flat != null && val.Flat != "" ? '<td>' + val.Flat + '</td>' : "<td></td>";
+
+            var published = val.Published == true ? '<i class="fas fa-check true-icon" nop-value="true"></i>' : '<i class="fas fa-times false-icon" nop-value="false"></i>';
+
+            //rows += '<tr><td><input name="checkbox_products" value="' + val.Id + '" type="checkbox" class="checkboxGroups"></td><td class="button-column" > <a class="btn btn-default" href="Edit/' + val.Id + '"><i class="fas fa-pencil-alt"></i>Edit</a></td>\
+            rows += '<tr><td><div class="checkboxGroups"><input type="checkbox" ></div></td><td class="button-column" > <a class="btn btn-default" href="Edit/' + val.Id + '"><i class="fas fa-pencil-alt"></i>Edit</a></td>\
+                <td> <img src="' + val.PictureThumbnailUrl + '" style="width:100%;height:100%;" /></td>\
+                <td> ' + val.Name + '</td><td>' + val.Sku + '</td><td>' + val.Price + '</td><td>' + val.StockQuantity + '</td><td>' + published + '</td>'
+                + Diameter
+                + Type
+                + Dopant
+                + Orientation
+                + ResistivityMin
+                + ResistivityMax
+                + Thickness
+                + Polish
+                + Grade
+                + Resistivity
+                + Flat
+                + '<td>' + val.FullDescription + '</td></tr> ';
+            specificationAttributes = '';
+        });
+        $("#products-grid").append(rows);
+
+
+        var table = $('#products-grid').DataTable({
+            scrollCollapse: true,
+            autoWidth: false,
+            "language": {
+                "lengthMenu": "_MENU_ rows per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ rows",
+                "infoEmpty": "Showing 0 to 0 of 0 rows",
+            },
+            dom: 'rt<"row"<"#tblInfo"i><"col-sm-3"l><"#tblPagination.col-sm-6"p>>',
+            orderCellsTop: true,
+            columnDefs: [{
+                'targets': [0,1,2, 7],
+                'orderable': false,
+            }],
+        });
+        //search box
+        $('#tblSearch').keyup(function () {
+            table.search($(this).val()).draw();
+        })
+        $("#products-grid_length").children().children().addClass("btn btn-secondary");
+        $("#products-grid_paginate").css({ "float": "right" });
+        $("#tblInfo").css({ "margin-left": "2%", "margin-right": "-8px", "margin-top": "5px" });
+        $("#tblPagination").css({ "margin-top": "3px" });
+        $('#products-grid thead tr:eq(0) th').each(function (i) {
+            var title = $(this).text();
+            if ($(this).text() !== '') {
+                if ( i == 3 || i == 4 || i == 5 || i == 6 || i == 8 || i == 9 || i == 10 || i == 11 || i == 12 || i == 13 || i == 14 || i == 15 || i == 16 || i==17 || i==18 || i==19) {
+                    var select = $('<select class="form-control" style="width:100px"><option value=""></option></select>')
+                        .appendTo($(this).html('<label class="pointer">' + title + '</label>'))
+                        .on('change', function () {
+                            table.column(i).search($(this).val()).draw();
+                        });
+
+                    title = '';
+
+                    table.column(i).data().unique().sort().each(function (d, j) {
+                        var val = d.replace(/\n/g, " ");
+                        select.append('<option value="' + val + '"><p >' + val + '</p></option>');
+                    });
+                }
+            }
+        });
+
+        table.columns.adjust().draw();
+    }
+
+    //function to load all products on page load
+    function LoadAllProducts() {
+        var data= {
+            "searchModel": "datastring",
+                'addAntiForgeryToken': "",
+        }
+        data = addAntiForgeryToken(data);
+        async:false,
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ProductList", "Product")',
+            data: data,
+            dataType: "json",
+            success: function (res) {
+                BindDataTable(res);
+            },
+            error: function (e) {
+                console.log(e);
+            },
+
+        });
+    }
+</script>

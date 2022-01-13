@@ -1,0 +1,506 @@
+﻿@model CategoryModel
+@using Nop.Core.Domain.Common
+@using Nop.Core.Domain.Seo
+@using Nop.Services.Catalog
+@using Nop.Core.Domain.Catalog
+@using Nop.Web.Models.Catalog
+@using Nop.Services.CustomCode
+@inject Nop.Core.IWebHelper webHelper
+@inject SeoSettings seoSettings
+@inject CommonSettings commonSettings
+@using Nop.Core.Domain.Orders
+@{ 
+    Layout = "_ColumnsOne";
+
+    //title
+    Html.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+    //page class
+    Html.AppendPageCssClassParts("html-category-page");
+
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }).ToLowerInvariant();
+        Html.AddCanonicalUrlParts(categoryUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
+    }
+
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+
+    var uwService = Nop.Core.Infrastructure.EngineContext.Current.Resolve<IUwCatalogService>();
+    var products = await uwService.GetProductCatalog(Model.Id);
+
+
+    foreach (var prod in products.UWProductDetails)
+    {         
+        prod.AddToCart = new ProductDetailsModel.AddToCartModel()
+        {
+            //AllowedQuantities = obj.AllowedQuantities,
+            DisableBuyButton = prod.DisableBuyButton,
+            ProductId = prod.Id,
+            EnteredQuantity = 1
+        };
+
+    }
+    var arr = @products.UWProductDetails;
+}
+
+@{ var shoppintCartId = (int)ShoppingCartType.ShoppingCart; }
+
+<style>
+    table.dataTable thead th.ui-state-default {
+        background: #555656;
+        color: white;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+    .ui-widget-header {
+        background: #555656 !important;
+    }
+
+    thead input {
+        width: 100%;
+    }
+
+    .pointer {
+    cursor: pointer;
+    }
+
+    /* Smartphones (landscape) ----------- */
+    @@media only screen and (min-width : 360px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+    /* Smartphones (portrait) ----------- */
+    @@media only screen and (min-width: 361px) and (max-width: 768px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+    /* iPads (portrait and landscape) ----------- */
+    @@media only screen and (min-device-width : 769px) and (max-device-width : 1024px) {
+        .QuoteRequest .btn {
+            font-size: 12px !important;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-xl {
+        width: 90%;
+            max-width: 1200px;
+        }
+    }
+
+#btnContinueShoping {
+background: #e8ad3f;
+    }
+
+    #btnCheckout {
+        background: green;
+    }
+
+    #btnGetPDFQuote {
+        background: #f93f3f87;
+    }
+</style>
+
+@await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsAfterBreadcrumb, additionalData = Model })
+
+<div class="page category-page from-panel">
+    @await Component.InvokeAsync("TopicBlock", new { systremName = "HomepageText" })
+    <div class="page-title panel-heading">
+        <h1>@Model.Name</h1>
+    </div>
+    <div class="page-body panel-body">
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsTop, additionalData = Model })
+        @*description*@
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="category-description">
+                @Html.Raw(Model.Description)
+            </div>
+        }
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeSubcategories, additionalData = Model })
+        @*subcategories*@
+        @if (Model.SubCategories.Count > 0)
+        {
+            <div class="sub-category-grid row">
+                @foreach (var item in Model.SubCategories)
+                {
+            <div class="item-box col-xs-12 col-sm-3 col-md-3">
+                <div class="sub-category-item thumbnail">
+                    <h3 class="title" style="padding: 10px; background-color: #e4dbd0;">
+                        <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+                            @item.Name
+                        </a>
+                    </h3>
+                </div>
+            </div>          }
+            </div>}
+                    @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeFeaturedProducts, additionalData = Model })
+                    @*featured products*@
+                    @if (Model.FeaturedProducts.Count > 0)
+                    {
+            <div class="featured-product-grid row">
+                <div class="title">
+                    <strong>@T("Products.FeaturedProducts")</strong>
+                </div>
+                <div class="product-grid">
+                    @foreach (var item in Model.FeaturedProducts)
+                    {
+            <div class="item-box col-xs-12 col-sm-4 col-md-4 product-align">
+                <div class="thumbnail">
+                    @await Html.PartialAsync("_ProductBox", item)
+                </div>
+            </div>}
+                </div>
+                /
+            </div>}
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsAfterFeaturedProducts, additionalData = Model })
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeProductList, additionalData = Model })
+        @*product grid and list*@
+        @if (products.UWProductDetails.Any())
+        {
+            <div class="container-fluid">
+                <div class="col-12" style="text-align: right;">
+                    <p style="">Search :&nbsp; <input type="text" id="tblSearch"></p>
+                </div>
+            </div>
+            <div class="freeze-table" id="freeze-table">
+                <table class="table table-striped table-bordered table-sm text-center" id="product-table" cellspacing="0" width="100%">
+                    <thead class="sticky-header">
+                        <tr style="background-color:#555656; color:white;">
+                            <th rowspan="2">Qty</th>
+                            <th rowspan="2">Id</th>
+                            <th rowspan="2">Diameter</th>
+                            <th rowspan="2">Type</th>
+                            <th rowspan="2">Dopant</th>
+
+                            <th rowspan="2">Orientation</th>
+                            <th rowspan="2">Polish</th>
+                            <th rowspan="2">Grade</th>
+                            <th rowspan="2">Resistivity Min</th>
+                            <th rowspan="2">Resistivity Max</th>
+
+                            <th rowspan="2">Thickness</th>
+                            <th rowspan="2">Lead Time</th>
+                            <th rowspan="2">Quantity</th>
+                            <th colspan="@products.Prices.Length">Unit Price</th>
+                            <th rowspan="2" style="min-width:190px; vertical-align: central !important ">Description</th>
+                        </tr>
+                        <tr style="background-color:#555656; color:white;">
+                            <th>1</th>
+                            <th>5</th>
+                            <th>10</th>
+                            <th>25</th>
+                            <th>50</th>
+
+                            <th>100</th>
+                            <th>200</th>
+                            <th>500</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+         }
+
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.CategoryDetailsBottom, additionalData = Model })
+    </div>
+</div>
+
+<!-- Modal for buttons popup -->
+<div class="modal fade" id="mdlOption" tabindex="-1" role="dialog" style="width:100%" aria-labelledby="mdlOption" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body QuoteRequest">
+                <input type="hidden" id="hdnProductId" value="" />
+                <h6 class="modal-title" id="mdlOptionTitle" style="font-size:1.5rem;"></h6><br />
+                <div class="row">
+                    <div class="col-sm-4">
+                        <button type="button" id="btnContinueShoping" class="btn btn-secondary" data-dismiss="modal" aria-label="Close" style="width: 100%;margin: 1%;color:white;">Continue Shoping</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" id="btnCheckout" class="btn btn-secondary" onclick="Checkout(1)" style="width: 100%; margin: 1%; color: white;">Checkout</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" id="btnGetPDFQuote" class="btn btn-secondary" onclick="GetPDFQuote()" style="width: 100%; margin: 1%; color: white;">Get PDF Quote</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for product details-->
+<div class="modal fade" id="mdlProductDetail" tabindex="-1" role="dialog" style="width:100%" aria-labelledby="mdlProductDetail" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="divProductDetail">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script asp-location="Footer">
+    //add for bind jquery datatable until all record not loaded completely
+        $(document).ready(function () {
+            BindDataTable();
+        });
+
+    $(window).load(function () {
+        $('#product-table').parent().freezeTable({
+            freezeHead: true,
+            freezeColumn: true,
+        });
+    });
+
+    function addToCartOnClick(productId, shoppingCartId) {
+
+        var enteredQtyVal = $('#product_enteredQuantity_' + productId).val();
+
+        var serializedData = "addtocart_" + productId + ".UpdatedShoppingCartItemId=" + productId;
+        serializedData += "&addtocart_" + productId + ".EnteredQuantity=" + enteredQtyVal;
+
+        AjaxCart.addproducttocart_details_uw("/addproducttocart/details/" + productId + "/" + shoppingCartId, serializedData);
+        $("#mdlOption").modal('hide');
+        return false;
+    }
+
+    //function for bind jquery datatable to product table
+    function BindDataTable() {
+        var res = BindTableHtml();
+        if (res == true) {
+        var table = $('#product-table').DataTable({
+            scrollCollapse: true,
+            autoWidth: false,
+            "language": {
+                "lengthMenu": "_MENU_ rows per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ rows",
+                "infoEmpty": "Showing 0 to 0 of 0 rows",
+            },
+            //dom: 'rt<"row"<"#tblInfo"i><"col-sm-3"l><"#tblPagination.col-sm-6"p>>',
+            dom: 'rt<"row ptbl"<"#tblInfo.col-sm-2"i><"col-sm-4"l><"#tblPagination.col-sm-6"p>>',
+            orderCellsTop: true,
+            columnDefs: [{
+                'targets': [0, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+                'orderable': false,
+            },
+            { width: 50, targets: 1 },
+            { width: 100, targets: 2 },
+            { width: 100, targets: 3 },
+            { width: 100, targets: 4 },
+            { width: 120, targets: 5 },
+            { width: 100, targets: 6 },
+            { width: 100, targets: 7 },
+            { width: 150, targets: 8 },
+            { width: 150, targets: 9 },
+            { width: 120, targets: 10 },
+            { width: 120, targets: 11 },
+            { width: 200, targets: 21 }
+            ],
+        });
+
+        $('#tblSearch').keyup(function () {
+            table.search($(this).val()).draw();
+        })
+
+        $("#product-table_length").children().children().addClass("btn");
+        $("#product-table_length").children().children().css({ "background-color": "#555656", "color": "#ffffff" });
+        $("#product-table_paginate").css({ "float": "right" });
+        $("#tblInfo").css({ "margin-left": "1%", "margin-right": "-33px", "margin-top": "5px" });
+        $("#tblPagination").css({ "margin-top": "3px" });
+        $('#product-table thead tr:eq(0) th').each(function (i) {
+            var title = $(this).text();
+            if ($(this).text() !== '') {
+
+                if (i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9 || i == 10 || i == 11) {
+
+                    var select = $('<select class="form-control"><option value=""></option></select>')
+                        .appendTo($(this).html('<label class="pointer">' + title + '</label><span class="DataTables_sort_icon css_right ui-icon ui-icon-triangle-1-n pointer"></span>'))
+                        .on('change', function () {
+                            table.column(i).search($(this).val()).draw();
+                        });
+
+                    title = '';
+
+                    //for clicked id
+                    if (i == 1) {
+                        table.column(i).data().unique().sort().each(function (d, j) {
+                            var sku = $(d).html();
+                            select.append('<option value="' + sku + '">' + sku + '</option>');
+                        });
+                    }
+                    else {
+                        table.column(i).data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>');
+                        });
+                    }
+                }
+            }
+        });
+
+
+            table.columns.adjust().draw();
+        }
+    }
+
+    function ShowModel(productId, shoppingCartId) {
+        $("#hdnProductId").val('');
+        $("#mdlOptionTitle").html("");
+        var qty = $("#product_enteredQuantity_" + productId).val();
+        $("#mdlOptionTitle").html(qty + " item(s) of the selected product have been added to the Cart.");
+        addToCartOnClick(productId, shoppingCartId);
+        $("#mdlOption").modal('show');
+    }
+
+    function Checkout(shoppingCartId) {
+        $("#mdlOption").modal('hide');
+        window.location.href = "/cart";
+    }
+    function GetPDFQuote() {
+        $("#mdlOption").modal('hide');
+        window.location.href = "/Quotation/RequestQuotation";
+    }
+
+    function MdlProductDetails(url) {
+        //AjaxCart.setLoadWaiting(true);
+        $.ajax({
+            url: url,
+            data: {
+                IsModelPopup: true
+            },
+            type: 'GET',
+            success: function (res) {
+                var pro = $($.parseHTML(res)).find("#product-details-form").parent().html();
+                $("#divProductDetail").html(pro);
+                //AjaxCart.setLoadWaiting(false);
+                $("#mdlProductDetail").modal('show');
+            }
+        });
+    }
+
+    function BindTableHtml() {
+        var pro = @Html.Raw(Json.Serialize(@arr));
+        rows=''
+        $.each(pro, function (i, val) {
+            var Diameter = val.Diameter != null && val.Diameter != "" ? '<td>' + val.Diameter + '</td>' : "<td></td>";
+            var Type = val.Type != null && val.Type != "" ? '<td>' + val.Type + '</td>' : "<td></td>";
+            var Dopant = val.Dopant != null && val.Dopant != "" ? '<td>' + val.Dopant + '</td>' : "<td></td>";
+            var Orientation = val.Orientation != null && val.Orientation != "" ? '<td>' + val.Orientation + '</td>' : "<td></td>";
+            var ResistivityMin = val.ResistivityMin != null && val.ResistivityMin != "" ? '<td>' + val.ResistivityMin + '</td>' : "<td></td>";
+            var ResistivityMax = val.ResistivityMax != null && val.ResistivityMax != "" ? '<td>' + val.ResistivityMax + '</td>' : "<td></td>";
+            var Thickness = val.Thickness != null && val.Thickness != "" ? '<td>' + val.Thickness + '</td>' : "<td></td>";
+            var Polish = val.Polish != null && val.Polish != "" ? '<td>' + val.Polish + '</td>' : "<td></td>";
+            var Grade = val.Grade != null && val.Grade != "" ? '<td>' + val.Grade + '</td>' : "<td></td>";
+            var OneUnitPrice = val.OneUnitPrice != null && val.OneUnitPrice != "" ? '<td>' + val.OneUnitPrice + '</td>' : "<td></td>";
+            var FiveUnitPrice = val.FiveUnitPrice != null && val.FiveUnitPrice != "" ? '<td>' + val.FiveUnitPrice + '</td>' : "<td></td>";
+            var TenUnitPrice = val.TenUnitPrice != null && val.TenUnitPrice != "" ? '<td>' + val.TenUnitPrice + '</td>' : "<td></td>";
+            var TwentyFiveUnitPrice = val.TwentyFiveUnitPrice != null && val.TwentyFiveUnitPrice != "" ? '<td style="color:white;background-color:green;">' + val.TwentyFiveUnitPrice + '</td>' : "<td></td>";
+            var FiftyUnitPrice = val.FiftyUnitPrice != null && val.FiftyUnitPrice != "" ? '<td>' + val.FiftyUnitPrice + '</td>' : "<td></td>";
+            var HundredUnitPrice = val.HundredUnitPrice != null && val.HundredUnitPrice != "" ? '<td>' + val.HundredUnitPrice + '</td>' : "<td></td>";
+            var TwoHundredUnitPrice = val.TwoHundredUnitPrice != null && val.TwoHundredUnitPrice != "" ? '<td>' + val.TwoHundredUnitPrice + '</td>' : "<td></td>";
+            var FiveHundredUnitPrice = val.FiveHundredUnitPrice != null && val.FiveHundredUnitPrice != "" ? '<td>' + val.FiveHundredUnitPrice + '</td>' : "<td></td>";
+            var allowedQuantities;
+            var enteredQuantity;
+            allowedQuantities = val.AddToCart.AllowedQuantities;
+            enteredQuantity = val.AddToCart.EnteredQuantity;
+            var btnATC=''
+            if (val.DisableBuyButton != true) {
+                btnATC = '<form id="#product-details-form-'+val.Id+'" style="max-width:110px;margin:auto 0" novalidate="novalidate">\
+                            <div class="add-to-cart" id="#product-details-form-' + val.Id + '" style="max-width:110px;margin: auto 0px;">\
+                                <div class="add-to-cart-panel" style="min-width: 90px;">\
+                                    <div class="form-group">\
+                                        <div class="quan">';
+                if (allowedQuantities.length > 0) {
+                    btnATC += '<div style = "float:left; max-width: 60px;">\
+                    <select asp-for="'+ enteredQuantity + '" asp-items="' + allowedQuantities + '" id="product_enteredQuantity_' + val.Id + '" class="qty-dropdown form-control"></select></div>';
+                    //script
+                    $(document).ready(function () {
+                        $("#product_enteredQuantity_"+val.Id).on("change", function () {
+                            var data = {
+                                            productId: val.Id,
+                                            quantity: $('#product_enteredQuantity_'+val.Id).find(":selected").text()
+                            };
+                            $('#enteredQty_'+val.Id).val(this.val);
+                            $(document).trigger({ type: "product_quantity_changed", changedData: data });
+                        });
+                    });
+                }
+                else {
+                    btnATC += '<div style="max-width: 40px; padding:0; margin: 0;">\
+                            <input id="product_enteredQuantity_'+ val.Id + '" class="qty-input form-control" type="text" style="width:90%" data-val="true" data-val-required="The Int32 field is required." name="enteredQuantity" value="1"></div>';
+                    //script
+                    $(document).ready(function () {
+                        $("#" + enteredQuantity).on("keydown", function (event) {
+                            if (event.keyCode == 13) {
+                                $("#add-to-cart-button-"+val.Id).trigger("click");
+                                return false;
+                            }
+                        });
+                        $("#product_enteredQuantity_"+val.Id).on("input propertychange paste", function () {
+                            var data = {
+                                productId: val.Id,
+                                quantity: $('#product_enteredQuantity_' + val.Id).val()
+                            };
+                            $(document).trigger({
+                                type: "product_quantity_changed", changedData: data
+                            });
+                        });
+                    });
+                }
+            }
+
+            btnATC += '<input id="enteredQty_' + val.Id + '" type="text" hidden>\
+                        <div class="product-add-button">\
+                            <input type="button" style="margin-top: 0.5px;width: 133%;" class="btn-primary add-to-cart-button" value="+" onclick="ShowModel('+ val.Id + ',@shoppintCartId)" /></div></form>';
+
+
+            rows += '<tr>\
+                <td>' + btnATC +'</td>\
+                <td><a href="javascript:" onclick="MdlProductDetails(/'+val.ProductSeName+'/)" class="product-name">'+val.Sku+'</a></td>'
+                + Diameter
+                + Type
+                + Dopant
+                + Orientation
+                + Polish
+                + Grade
+                + ResistivityMin
+                + ResistivityMax
+                + Thickness+
+                '<td>'+ val.LeadTime+'</td>\
+                <td>'+ val.StockQuantity+'</td>'
+                + OneUnitPrice
+                + FiveUnitPrice
+                + TenUnitPrice
+                + TwentyFiveUnitPrice
+                + FiftyUnitPrice
+                + HundredUnitPrice
+                + TwoHundredUnitPrice
+                + FiveHundredUnitPrice +
+                '<td>'+ val.FullDescription +'</td>\
+                </tr>';
+        });
+        $('#product-table tbody').append(rows);
+        return true
+    }
+</script>

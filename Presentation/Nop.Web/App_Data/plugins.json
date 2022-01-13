@@ -1,0 +1,86 @@
+﻿{
+  "InstalledPluginNames": [
+    "Obsolete field, using only for compatibility"
+  ],
+  "InstalledPlugins": [
+    {
+      "SystemName": "Payments.PayPalCommerce",
+      "Version": "1.00"
+    },
+    {
+      "SystemName": "Payments.PayPalStandard",
+      "Version": "1.66"
+    },
+    {
+      "SystemName": "DiscountRequirement.MustBeAssignedToCustomerRole",
+      "Version": "1.36"
+    },
+    {
+      "SystemName": "CurrencyExchange.ECB",
+      "Version": "1.28"
+    },
+    {
+      "SystemName": "Misc.Sendinblue",
+      "Version": "3.32"
+    },
+    {
+      "SystemName": "MultiFactorAuth.GoogleAuthenticator",
+      "Version": "1.04"
+    },
+    {
+      "SystemName": "Payments.CheckMoneyOrder",
+      "Version": "1.46"
+    },
+    {
+      "SystemName": "Payments.Manual",
+      "Version": "1.55"
+    },
+    {
+      "SystemName": "Pickup.PickupInStore",
+      "Version": "1.39"
+    },
+    {
+      "SystemName": "Shipping.FixedByWeightByTotal",
+      "Version": "2.28"
+    },
+    {
+      "SystemName": "Shipping.ShipStation",
+      "Version": "1.16"
+    },
+    {
+      "SystemName": "Shipping.UPS",
+      "Version": "1.65"
+    },
+    {
+      "SystemName": "Tax.Avalara",
+      "Version": "2.41"
+    },
+    {
+      "SystemName": "Tax.FixedOrByCountryStateZip",
+      "Version": "1.38"
+    },
+    {
+      "SystemName": "Widgets.AccessiBe",
+      "Version": "1.12"
+    },
+    {
+      "SystemName": "Widgets.FacebookPixel",
+      "Version": "1.06"
+    },
+    {
+      "SystemName": "Widgets.GoogleAnalytics",
+      "Version": "1.67"
+    },
+    {
+      "SystemName": "Widgets.NivoSlider",
+      "Version": "1.41"
+    },
+    {
+      "SystemName": "ExternalAuth.Facebook",
+      "Version": "1.68"
+    }
+  ],
+  "PluginNamesToUninstall": [],
+  "PluginNamesToDelete": [],
+  "PluginNamesToInstall": []
+}
