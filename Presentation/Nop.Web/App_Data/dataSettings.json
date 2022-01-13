@@ -1,8 +1,0 @@
-﻿{
-  //"DataConnectionString": "Data Source=APEX-79\\SQLEXPRESS;Initial Catalog=uw_inventory_store(nopcommerce4.40);Integrated Security=True;Persist Security Info=False;Connect Timeout=50000",
-  //"DataConnectionString": "Data Source=APEX-79\\SQLEXPRESS;Initial Catalog=uw_inventory_store_test02;Integrated Security=True;Persist Security Info=False;",
-  "DataConnectionString": "Data Source=KAS0002\\SQLEXPRESS;Initial Catalog=uw_inventory_store_4.30;Integrated Security=False;Persist Security Info=False;User ID=devuser;Password=d3vus3r",
-  "DataProvider": "sqlserver",
-  "SQLCommandTimeout": null,
-  "RawDataSettings": {}
-}
